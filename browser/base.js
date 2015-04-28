@@ -15030,8 +15030,13 @@ if(tk.mode==M_bar) {
 }
 if(isNumerical(tk)) {
 	if(A>=tk.data.length) return null;
-	if(B>=tk.data[A].length) return null;
-	return tk.data[A][B];
+	if(tk.data[A]){
+       if(B>=tk.data[A].length) return null;
+        if ( tk.data[A][B] ) {
+            return tk.data[A][B];
+        }
+    }
+
 }
 switch(tk.ft) {
 case FT_cat_n:
