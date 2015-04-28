@@ -59,7 +59,7 @@ shakedom:null,
 is_cors:false,
 cors_host:'',
 __pageMakeDom_called:false,
-dspstat_showgenomename:false,
+    dspstat_showgenomename: false,
     bbj_x_updating: {},
     dump:[],
 badjson:[],
@@ -15030,7 +15030,7 @@ if(tk.mode==M_bar) {
 }
 if(isNumerical(tk)) {
 	if(A>=tk.data.length) return null;
-	//dpuru : if(B>=tk.data[A].length) return null;
+	if(B>=tk.data[A].length) return null;
 	return tk.data[A][B];
 }
 switch(tk.ft) {
