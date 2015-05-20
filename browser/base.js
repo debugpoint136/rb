@@ -15036,7 +15036,6 @@ if(isNumerical(tk)) {
             return tk.data[A][B];
         }
     }
-
 }
 switch(tk.ft) {
 case FT_cat_n:
@@ -15046,6 +15045,12 @@ case FT_matplot:
 	return true;
 case FT_cm_c:
 	return true;
+    /*dpuru : 05/21/2015*/
+    case FT_bigwighmtk_n:
+    case FT_bigwighmtk_c:
+        qtc_paramCopy(defaultQtcStyle.ft3, tk.qtc);
+        break;
+    /**/
 case FT_anno_n:
 case FT_anno_c:
 case FT_bam_n:
@@ -15134,7 +15139,7 @@ case FT_qcats:
 		}
 	}
 	return null;
-default: fatalError('unknown tk ft');
+default: console.log('unknown tk ft');
 }
 };
 

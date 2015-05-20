@@ -751,7 +751,7 @@ Browser.prototype.getTrackdetail=function(geoacc)
 safe?
 */
 menu_getExperimentInfo(geo2id[geoacc]);
-}
+};
 
 
 
@@ -1048,7 +1048,7 @@ for(var i=0; i<lst.length; i++) {
 }
 if(idlst.length==0) {
 	// no hit
-	picasays.innerHTML=chr+' '+parseInt(x/apps.gg.sf)
+	picasays.innerHTML=chr+' '+parseInt(x/apps.gg.sf);
 	pica_go(event.clientX, pos[1]+apps.gg.chrbarheight);
 } else {
 	var text=['<table><tr>'];
@@ -1929,7 +1929,7 @@ if(!butt.sukngsv) {
 	// print coord of all items
 	var d=window.open().document;
 	for(var i=0; i<n; i++) {
-		var t=v.rank.rarr[i]
+		var t=v.rank.rarr[i];
 		var j=v.bev.data[t[0]][t[1]];
 		d.write(t[0]+':'+j[0]+'-'+j[1]+'<br>');
 	}
@@ -1973,7 +1973,7 @@ var lastTEid=Math.min(299,n-1);
 var flankbp=5000;
 var itemlst=[];
 for(var i=0; i<=lastTEid; i++) {
-	var t=v.rank.rarr[i]
+	var t=v.rank.rarr[i];
 	var j=v.bev.data[t[0]][t[1]];
 	itemlst.push({c:t[0],
 		a:j[0],a1:j[0],
@@ -2023,7 +2023,7 @@ for(var i=0; i<cp.treatment_all.length; i++) {
 	var canvas=cp.tk2canvas[dd[0]];
 	var ctx=canvas.getContext('2d');
 	canvaslst.push([canvas,ctx]);
-	barplot_base(dd[1],
+    browser.barplot_base(dd[1],
 		0,dd[1].length,
 		ctx,
 		{p:'rgb('+qtc_treat_a.pr+','+qtc_treat_a.pg+','+qtc_treat_a.pb+')',
@@ -2032,10 +2032,44 @@ for(var i=0; i<cp.treatment_all.length; i++) {
 		0,densitydecorpaddingtop,
 		cp.sf,wiggleheight,true,false);
 }
+/*    this is what the function is expecting : @8660-base.js
+        var data=arg.data,
+        ctx=arg.ctx,
+        colors=arg.colors,
+        tk=arg.tk,
+        ridx=arg.rid, // for weaver
+        initcoord=arg.initcoord, // for weaver, given for barplot
+        x=arg.x, // will be incremented by weaver insert
+        y=arg.y,
+        pheight=arg.h,
+        pointup=arg.pointup,
+        w=arg.w,
+        tosvg=arg.tosvg;*/
+
+    /*
+    * Example invocation :-
+    *
+    *var svd=this.barplot_base({
+     data:data2[i],
+     ctx:ctx,
+     colors:{p:'rgb('+tkobj.qtc.pr+','+tkobj.qtc.pg+','+tkobj.qtc.pb+')',
+     n:'rgb('+tkobj.qtc.nr+','+tkobj.qtc.ng+','+tkobj.qtc.nb+')',
+     pth:tkobj.qtc.pth,
+     nth:tkobj.qtc.nth,
+     barbg:tkobj.qtc.barplotbg},
+     tk:tkobj,
+     rid:i,
+     x:this.cumoffset(i,r[3]),
+     y:tkobj.qtc.height>=20?densitydecorpaddingtop:0,
+     h:tkobj.qtc.height,
+     pointup:true,
+     tosvg:tosvg});
+     */
+
 /* overlay treat-unique */
 for(i=0; i<cp.treatment_unique.length; i++) {
 	var dd=cp.treatment_unique[i];
-	barplot_base(dd[1],
+	    barplot_base(dd[1],
 		0, dd[1].length,
 		canvaslst[i][1],
 		{p:'rgb('+qtc_treat_u.pr+','+qtc_treat_u.pg+','+qtc_treat_u.pb+')',
@@ -2062,7 +2096,7 @@ if(id2geo[vobj.geoid].input!=null) {
 		var canvas=cp.tk2canvas[dd[0]];
 		var ctx=canvas.getContext('2d');
 		canvaslst.push([canvas,ctx]);
-		barplot_base(dd[1],
+		    browser.barplot_base(dd[1],
 			0,dd[1].length,
 			ctx,
 			{p:'rgb('+qtc_input_a.pr+','+qtc_input_a.pg+','+qtc_input_a.pb+')',
@@ -2074,7 +2108,7 @@ if(id2geo[vobj.geoid].input!=null) {
 	// overlay input-unique
 	for(i=0; i<cp.input_unique.length; i++) {
 		var dd=cp.input_unique[i];
-		barplot_base(dd[1],
+		    barplot_base(dd[1],
 			0,dd[1].length,
 			canvaslst[i][1],
 			{p:'rgb('+qtc_input_u.pr+','+qtc_input_u.pg+','+qtc_input_u.pb+')',
@@ -2397,7 +2431,7 @@ browser.splinters[tag]=chip;
 /* tracks */
 
 // add basic decors
-var _tklst=[]
+var _tklst=[];
 _tklst.push({name:defaultGeneTrack, ft:FT_anno_n, mode:M_full});
 _tklst.push({name:defaultRepeatEnsembleTrack, ft:FT_cat_n, mode:M_show});
 var vobj=apps.gg.view[gflag.zoomin.viewkey];
@@ -2494,7 +2528,7 @@ for(var i=0; i<this.tklst.length; i++) {
 this.drawRuler_browser(false);
 this.drawTrack_browser_all();
 this.drawIdeogram_browser(false);
-}
+};
 
 function __splinter_delete(event)
 {
@@ -2586,7 +2620,7 @@ menu_shutup();
 menu.c32.style.display='block';
 menu.c32.innerHTML='<div style="margin:10px;"><a href='+url_base+'?genome='+this.genome.name+'&datahub_jsonfile='+url_base+'t/'+key+' target=_blank>Click this link to view in WashU EpiGenome Browser</a></div>';
 menu_show_beneathdom(0,d);
-}
+};
 
 
 /* __splinter__ ends */
@@ -2603,7 +2637,7 @@ for(var i=0; i<lst.length; i++) {
 	}
 }
 return lst2;
-}
+};
 
 /* __scatter__ */
 
