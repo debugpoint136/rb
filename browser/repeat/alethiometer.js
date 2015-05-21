@@ -255,7 +255,6 @@ browser.drawMcm(false);
 
 
 
-
 function bigmap_move_Md(event)
 {
 if(event.button!=0) return;
@@ -751,10 +750,7 @@ Browser.prototype.getTrackdetail=function(geoacc)
 safe?
 */
 menu_getExperimentInfo(geo2id[geoacc]);
-};;
-
-
-
+};
 function menu_getExperimentInfo(geoid, x,y)
 {
 // x,y are optional
@@ -1048,8 +1044,8 @@ for(var i=0; i<lst.length; i++) {
 }
 if(idlst.length==0) {
 	// no hit
-	picasays.innerHTML=chr+' '+parseInt(x/apps.gg.sf);;
-	pica_go(event.clientX, pos[1]+apps.gg.chrbarheight);
+    picasays.innerHTML = chr + ' ' + parseInt(x / apps.gg.sf);
+    pica_go(event.clientX, pos[1]+apps.gg.chrbarheight);
 } else {
 	var text=['<table><tr>'];
 	for(var i=0; i<idlst.length; i++) {
@@ -1929,8 +1925,8 @@ if(!butt.sukngsv) {
 	// print coord of all items
 	var d=window.open().document;
 	for(var i=0; i<n; i++) {
-		var t=v.rank.rarr[i];;
-		var j=v.bev.data[t[0]][t[1]];
+        var t = v.rank.rarr[i];
+        var j=v.bev.data[t[0]][t[1]];
 		d.write(t[0]+':'+j[0]+'-'+j[1]+'<br>');
 	}
 	return;
@@ -1973,8 +1969,8 @@ var lastTEid=Math.min(299,n-1);
 var flankbp=5000;
 var itemlst=[];
 for(var i=0; i<=lastTEid; i++) {
-	var t=v.rank.rarr[i];;
-	var j=v.bev.data[t[0]][t[1]];
+    var t = v.rank.rarr[i];
+    var j=v.bev.data[t[0]][t[1]];
 	itemlst.push({c:t[0],
 		a:j[0],a1:j[0],
 		b:j[1],b1:j[1],
@@ -2023,7 +2019,7 @@ for(var i=0; i<cp.treatment_all.length; i++) {
 	var canvas=cp.tk2canvas[dd[0]];
 	var ctx=canvas.getContext('2d');
 	canvaslst.push([canvas,ctx]);
-    browser.barplot_base(dd[1],
+    barplot_base(dd[1],
 		0,dd[1].length,
 		ctx,
 		{p:'rgb('+qtc_treat_a.pr+','+qtc_treat_a.pg+','+qtc_treat_a.pb+')',
@@ -2431,8 +2427,8 @@ browser.splinters[tag]=chip;
 /* tracks */
 
 // add basic decors
-var _tklst=[];;
-_tklst.push({name:defaultGeneTrack, ft:FT_anno_n, mode:M_full});
+    var _tklst = [];
+    _tklst.push({name:defaultGeneTrack, ft:FT_anno_n, mode:M_full});
 _tklst.push({name:defaultRepeatEnsembleTrack, ft:FT_cat_n, mode:M_show});
 var vobj=apps.gg.view[gflag.zoomin.viewkey];
 
@@ -2528,8 +2524,7 @@ for(var i=0; i<this.tklst.length; i++) {
 this.drawRuler_browser(false);
 this.drawTrack_browser_all();
 this.drawIdeogram_browser(false);
-};;
-
+};
 function __splinter_delete(event)
 {
 var tag=gflag.browser.splinterTag;
@@ -2620,9 +2615,7 @@ menu_shutup();
 menu.c32.style.display='block';
 menu.c32.innerHTML='<div style="margin:10px;"><a href='+url_base+'?genome='+this.genome.name+'&datahub_jsonfile='+url_base+'t/'+key+' target=_blank>Click this link to view in WashU EpiGenome Browser</a></div>';
 menu_show_beneathdom(0,d);
-};;
-
-
+};
 /* __splinter__ ends */
 
 
@@ -2637,8 +2630,7 @@ for(var i=0; i<lst.length; i++) {
 	}
 }
 return lst2;
-};;
-
+};
 /* __scatter__ */
 
 function scatterplot_show_2()

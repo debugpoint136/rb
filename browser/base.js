@@ -8631,7 +8631,110 @@ for(var i=0; i<this.tklst.length; i++) {
 }
 };
 
+function barplot_base(data,startidx,stopidx,ctx,colors,max,min,x,y,w,pheight,pointup,tosvg)
+{
+    if(!colors.p) {
+        colors.p='rgb(184,0,92)';
+    }
+    if(!colors.n) {
+        colors.n='rgb(0,79,158)';
+    }
+    var svgdata=[];
+    for(var i=startidx; i<stopidx; i++) {
+        var score=data[i];
+        var bary=null, barh=null, barcolor=null,
+            tipy=null, tipcolor=null;
+        if(isNaN(score)) {
+            // do nothing
+        } else if(score==Infinity) {
+            barcolor=colors.inf?colors.inf:'#b5b5b5';
+            if(max>0 && min<0) {
+                barh=pheight*max/(max-min);
+                bary=pointup ? y : (y+pheight-barh);
+            } else {
+                bary=y;
+                barh=pheight;
+            }
+        } else if(score==-Infinity) {
+            barcolor=colors.inf?colors.inf:'#b5b5b5';
+            if(max>0 && min<0) {
+                barh=pheight*(0-min)/(max-min);
+                bary=pointup ? (y+pheight-barh) : y;
+            } else {
+                bary=y;
+                barh=pheight;
+            }
+        } else {
+            if(max>0 && min<0) {
+                if(score>=0) {
+                    barh=pheight*Math.min(score,max)/(max-min);
+                    barcolor=colors.p;
+                    bary = y+pheight*max/(max-min) - (pointup ? barh : 0);
+                    if(score>=max && colors.pth) {
+                        tipcolor=colors.pth;
+                        tipy= pointup ? y : y+pheight-2;
+                    }
+                } else {
+                    barh=pheight*(0-Math.max(score,min))/(max-min);
+                    barcolor=colors.n;
+                    bary = y+pheight*max/(max-min) - (pointup ? 0 : barh);
+                    if(score<=min && colors.nth) {
+                        tipcolor=colors.nth;
+                        tipy= pointup ? y+pheight-2 : y;
+                    }
+                }
+            } else if(max>0) {
+                barcolor=colors.p;
+                if(score<min) {
+                } else if(min>0 && score==min) {
+                    barh=1;
+                    bary=pointup ? y+pheight-1 : y;
+                } else {
+                    barh=pheight*(Math.min(score,max)-min)/(max-min);
+                    bary= pointup ? (y+pheight-barh) : y;
+                    if(score>=max && colors.pth) {
+                        tipcolor=colors.pth;
+                        tipy= pointup ? y : y+pheight-2;
+                    }
+                }
+            } else {
+                barcolor=colors.n;
+                if(score>max) {
+                } else if(max<0 && score==max) {
+                    barh=1;
+                    bary=pointup ? y: y+pheight-1;
+                } else {
+                    barh=pheight*(max-Math.max(score,min))/(max-min);
+                    bary= pointup ? y : (y+pheight-barh);
+                    if(score<=min && colors.nth) {
+                        tipcolor=colors.nth;
+                        tipy= pointup ? y+pheight-2 : y;
+                    }
+                }
+            }
+        }
+        if(barh==null) {
+            if(tosvg) svgdata.push({type:svgt_no});
+        } else {
+            if(colors.barbg) {
+                ctx.fillStyle=colors.barbg;
+                ctx.fillRect(x,y,w,pheight);
+                if(tosvg) svgdata.push({type:svgt_line,x1:x, y1:y, x2:x, y2:y+pheight, w:w, color:ctx.fillStyle});
+            }
 
+            ctx.fillStyle = barcolor;
+            ctx.fillRect(x, bary, w, barh);
+            if(tosvg) svgdata.push({type:svgt_rect,x:x,y:bary,w:w,h:barh,fill:barcolor});
+        }
+        if(tipy) {
+            ctx.fillStyle = tipcolor;
+            ctx.fillRect(x, tipy, w, 2);
+            if(tosvg) svgdata.push({type:svgt_rect,x:x,y:tipy,w:w,h:2,fill:tipcolor});
+        }
+        x+=w;
+    }
+    if(tosvg) return svgdata;
+}
 
 Browser.prototype.barplot_uniform=function(arg)
 {
