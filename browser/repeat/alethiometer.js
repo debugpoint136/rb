@@ -28,8 +28,8 @@ var url_subfambed=url_base+'repeat/_d/subfam_bed/';
 
 var geneTrackColor='#00A4DB';
 var defaultRepeatEnsembleTrack='rmsk_ensemble';
-var geopreload='GSM733769,GSM733708,GSM945188,GSM733772,GSM733664,GSM733677,GSM733758,GSM945196,GSM733771,GSM733679,GSM945212,GSM733736,GSM733642,GSM733767,GSM736620,GSM816665,GSM733752,GSM749706,GSM822312,GSM935611,GSM803355,GSM822270,GSM935386,GSM803485,GSM935612,GSM935608,GSM733734,GSM733682,GSM945201,GSM798322,GSM1003480,GSM733756,GSM733696,GSM945208,GSM733684,GSM733711,GSM945230,GSM733669,GSM733689,GSM1003483,GSM1003520,GSM736564,GSM816633,GSM816643,GSM733785,GSM749739,GSM822285,GSM733759,GSM803533,GSM822273,GSM935395,GSM935360,GSM935383';
-//var geopreload='GSM935580,GSM935360,GSM733769,GSM733708';
+//var geopreload='GSM733769,GSM733708,GSM945188,GSM733772,GSM733664,GSM733677,GSM733758,GSM945196,GSM733771,GSM733679,GSM945212,GSM733736,GSM733642,GSM733767,GSM736620,GSM816665,GSM733752,GSM749706,GSM822312,GSM935611,GSM803355,GSM822270,GSM935386,GSM803485,GSM935612,GSM935608,GSM733734,GSM733682,GSM945201,GSM798322,GSM1003480,GSM733756,GSM733696,GSM945208,GSM733684,GSM733711,GSM945230,GSM733669,GSM733689,GSM1003483,GSM1003520,GSM736564,GSM816633,GSM816643,GSM733785,GSM749739,GSM822285,GSM733759,GSM803533,GSM822273,GSM935395,GSM935360,GSM935383';
+var geopreload='GSM935580,GSM935360,GSM733769,GSM733708';
 
 var apply_weight=false;
 
@@ -179,9 +179,9 @@ for(var i=0; i<col_runtime.length; i++) {
 
 // first, draw total bp # color gradient
 var max=0;
-for(i=0; i<col_runtime.length; i++) max=Math.max(id2subfam[col_runtime[i]].genomelen,max);
+for(i=0; i<col_runtime.length; i++) max=Math.max(id2subfam[col_runtime[i]].genomelen,max); // get the longest sequence : e.g. max = 42905137
 for(i=0; i<col_runtime.length; i++) {
-	ctxlst[i].fillStyle='rgba('+pr+','+pg+','+pb+','+id2subfam[col_runtime[i]].genomelen/max+')';
+	ctxlst[i].fillStyle='rgba('+pr+','+pg+','+pb+','+id2subfam[col_runtime[i]].genomelen/max+')'; // longer the genome length - less transparentt it would
 	ctxlst[i].fillRect(0,0,cellwidth,temcm_cellheight);
 }
 // then, draw attributes in temcm
@@ -215,7 +215,7 @@ for(i=0; i<browser.tklst.length; i++) {
 	var tkobj=browser.tklst[i];
 
 	ctx=tkobj.canvas.getContext('2d');
-
+	// useRatioIdx = 0, useRatioIdx = 1 gets log odds Ratio
 	var vlst=[];
 	for(var j=0; j<col_runtime.length; j++) {
 		var vv=tkobj.data[col_runtime[j]][useRatioIdx];
@@ -238,7 +238,10 @@ for(i=0; i<browser.tklst.length; i++) {
 		max=tkobj.maxv;
 		min=tkobj.minv;
 	}
-		
+	/*
+	* Greater than 0 = blue
+	* Lesser than 0 = yellow
+	*/
 	for(j=0; j<vlst.length; j++) {
 		if(vlst[j]>0) {
 			ctx.fillStyle='rgba('+pr+','+pg+','+pb+','+(vlst[j]/max)+')';
@@ -252,7 +255,6 @@ for(i=0; i<browser.tklst.length; i++) {
 browser.prepareMcm();
 browser.drawMcm(false);
 }
-
 
 
 
@@ -751,10 +753,7 @@ Browser.prototype.getTrackdetail=function(geoacc)
 safe?
 */
 menu_getExperimentInfo(geo2id[geoacc]);
-}
-
-
-
+};
 function menu_getExperimentInfo(geoid, x,y)
 {
 // x,y are optional
@@ -1048,8 +1047,8 @@ for(var i=0; i<lst.length; i++) {
 }
 if(idlst.length==0) {
 	// no hit
-	picasays.innerHTML=chr+' '+parseInt(x/apps.gg.sf)
-	pica_go(event.clientX, pos[1]+apps.gg.chrbarheight);
+    picasays.innerHTML = chr + ' ' + parseInt(x / apps.gg.sf);
+    pica_go(event.clientX, pos[1]+apps.gg.chrbarheight);
 } else {
 	var text=['<table><tr>'];
 	for(var i=0; i<idlst.length; i++) {
@@ -1338,7 +1337,7 @@ if(sfinfo.consensuslen>0) {
 		d2.appendChild(s);
 	} else {
 		var s=document.createElement('span');
-		s.innerHTML='All aligned reads by itere&nbsp;';
+		s.innerHTML='All aligned reads by iteres&nbsp;';
 		d2.appendChild(s);
 		s=document.createElement('span');
 		s.style.backgroundColor='rgb('+qtc_treat_a.pr+','+qtc_treat_a.pg+','+qtc_treat_a.pb+')';
@@ -1929,8 +1928,8 @@ if(!butt.sukngsv) {
 	// print coord of all items
 	var d=window.open().document;
 	for(var i=0; i<n; i++) {
-		var t=v.rank.rarr[i]
-		var j=v.bev.data[t[0]][t[1]];
+        var t = v.rank.rarr[i];
+        var j=v.bev.data[t[0]][t[1]];
 		d.write(t[0]+':'+j[0]+'-'+j[1]+'<br>');
 	}
 	return;
@@ -1973,8 +1972,8 @@ var lastTEid=Math.min(299,n-1);
 var flankbp=5000;
 var itemlst=[];
 for(var i=0; i<=lastTEid; i++) {
-	var t=v.rank.rarr[i]
-	var j=v.bev.data[t[0]][t[1]];
+    var t = v.rank.rarr[i];
+    var j=v.bev.data[t[0]][t[1]];
 	itemlst.push({c:t[0],
 		a:j[0],a1:j[0],
 		b:j[1],b1:j[1],
@@ -2023,19 +2022,61 @@ for(var i=0; i<cp.treatment_all.length; i++) {
 	var canvas=cp.tk2canvas[dd[0]];
 	var ctx=canvas.getContext('2d');
 	canvaslst.push([canvas,ctx]);
-	barplot_base(dd[1],
-		0,dd[1].length,
-		ctx,
-		{p:'rgb('+qtc_treat_a.pr+','+qtc_treat_a.pg+','+qtc_treat_a.pb+')',
-		n:'rgb('+qtc_treat_a.pr+','+qtc_treat_a.pg+','+qtc_treat_a.pb+')'},
-		cp.assayMax,cp.assayMin,
-		0,densitydecorpaddingtop,
-		cp.sf,wiggleheight,true,false);
+    if(cp.assayMax == 0 && cp.assayMin == 0){
+        // create a notice
+        ctx.fillStyle = "rgb(158, 151, 142)";
+        ctx.fillText("No signal detected in this assay for this TE consensus", 200, 25);
+    } else {
+        barplot_base(dd[1],
+            0, dd[1].length,
+            ctx,
+            {
+                p: 'rgb(' + qtc_treat_a.pr + ',' + qtc_treat_a.pg + ',' + qtc_treat_a.pb + ')',
+                n: 'rgb(' + qtc_treat_a.pr + ',' + qtc_treat_a.pg + ',' + qtc_treat_a.pb + ')'
+            },
+            cp.assayMax, cp.assayMin,
+            0, densitydecorpaddingtop,
+            cp.sf, wiggleheight, true, false);
+    }
 }
+/*    this is what the function is expecting : @8660-base.js
+        var data=arg.data,
+        ctx=arg.ctx,
+        colors=arg.colors,
+        tk=arg.tk,
+        ridx=arg.rid, // for weaver
+        initcoord=arg.initcoord, // for weaver, given for barplot
+        x=arg.x, // will be incremented by weaver insert
+        y=arg.y,
+        pheight=arg.h,
+        pointup=arg.pointup,
+        w=arg.w,
+        tosvg=arg.tosvg;*/
+
+    /*
+    * Example invocation :-
+    *
+    *var svd=this.barplot_base({
+     data:data2[i],
+     ctx:ctx,
+     colors:{p:'rgb('+tkobj.qtc.pr+','+tkobj.qtc.pg+','+tkobj.qtc.pb+')',
+     n:'rgb('+tkobj.qtc.nr+','+tkobj.qtc.ng+','+tkobj.qtc.nb+')',
+     pth:tkobj.qtc.pth,
+     nth:tkobj.qtc.nth,
+     barbg:tkobj.qtc.barplotbg},
+     tk:tkobj,
+     rid:i,
+     x:this.cumoffset(i,r[3]),
+     y:tkobj.qtc.height>=20?densitydecorpaddingtop:0,
+     h:tkobj.qtc.height,
+     pointup:true,
+     tosvg:tosvg});
+     */
+
 /* overlay treat-unique */
 for(i=0; i<cp.treatment_unique.length; i++) {
 	var dd=cp.treatment_unique[i];
-	barplot_base(dd[1],
+	    barplot_base(dd[1],
 		0, dd[1].length,
 		canvaslst[i][1],
 		{p:'rgb('+qtc_treat_u.pr+','+qtc_treat_u.pg+','+qtc_treat_u.pb+')',
@@ -2062,7 +2103,7 @@ if(id2geo[vobj.geoid].input!=null) {
 		var canvas=cp.tk2canvas[dd[0]];
 		var ctx=canvas.getContext('2d');
 		canvaslst.push([canvas,ctx]);
-		barplot_base(dd[1],
+		    barplot_base(dd[1],
 			0,dd[1].length,
 			ctx,
 			{p:'rgb('+qtc_input_a.pr+','+qtc_input_a.pg+','+qtc_input_a.pb+')',
@@ -2074,7 +2115,7 @@ if(id2geo[vobj.geoid].input!=null) {
 	// overlay input-unique
 	for(i=0; i<cp.input_unique.length; i++) {
 		var dd=cp.input_unique[i];
-		barplot_base(dd[1],
+		    barplot_base(dd[1],
 			0,dd[1].length,
 			canvaslst[i][1],
 			{p:'rgb('+qtc_input_u.pr+','+qtc_input_u.pg+','+qtc_input_u.pb+')',
@@ -2397,8 +2438,8 @@ browser.splinters[tag]=chip;
 /* tracks */
 
 // add basic decors
-var _tklst=[]
-_tklst.push({name:defaultGeneTrack, ft:FT_anno_n, mode:M_full});
+    var _tklst = [];
+    _tklst.push({name:defaultGeneTrack, ft:FT_anno_n, mode:M_full});
 _tklst.push({name:defaultRepeatEnsembleTrack, ft:FT_cat_n, mode:M_show});
 var vobj=apps.gg.view[gflag.zoomin.viewkey];
 
@@ -2494,8 +2535,7 @@ for(var i=0; i<this.tklst.length; i++) {
 this.drawRuler_browser(false);
 this.drawTrack_browser_all();
 this.drawIdeogram_browser(false);
-}
-
+};
 function __splinter_delete(event)
 {
 var tag=gflag.browser.splinterTag;
@@ -2586,9 +2626,7 @@ menu_shutup();
 menu.c32.style.display='block';
 menu.c32.innerHTML='<div style="margin:10px;"><a href='+url_base+'?genome='+this.genome.name+'&datahub_jsonfile='+url_base+'t/'+key+' target=_blank>Click this link to view in WashU EpiGenome Browser</a></div>';
 menu_show_beneathdom(0,d);
-}
-
-
+};
 /* __splinter__ ends */
 
 
@@ -2603,8 +2641,7 @@ for(var i=0; i<lst.length; i++) {
 	}
 }
 return lst2;
-}
-
+};
 /* __scatter__ */
 
 function scatterplot_show_2()
@@ -2805,8 +2842,11 @@ browser.genome.border={lname:s.current[0],
 	rpos:s.len[s.current[s.current.length-1]]};
 
 // must manually init facet
+/*
 browser.makeui_facet_panel();
 browser.facetlst=[];
+	browser.facet.main.tab_td.style.display='none'; //dpuru - salvaging from tmp1
+*/
 
 browser.migratedatafromgenome();
 
@@ -2942,14 +2982,14 @@ loading_done();
 
 function readygo()
 {
-colorCentral.foreground='rgb(230,235,230)';
-colorCentral.background='#000000';
+colorCentral.foreground='#EAE3CB';
+colorCentral.background='#3f7271';
 colorCentral.fg_r=188;
 colorCentral.fg_g=201;
 colorCentral.fg_b=188;
 colorCentral.hl='#1814FD';
-colorCentral.pagebg='rgb(0,0,30)';
-regionSpacing.color='black';
+colorCentral.pagebg='rgb(63,102,130)';
+regionSpacing.color='#FCF4DC';
 
 document.body.addEventListener('keyup',page_keyup,false);
 document.getElementById('headerdiv').style.backgroundColor=colorCentral.pagebg;
@@ -3023,9 +3063,9 @@ apps.gg.decortklst=[];
 pagecloak.style.backgroundColor='rgb(0,30,0)';
 pagecloak.style.opacity=0.85;
 
-menu.style.backgroundColor='black';
+menu.style.backgroundColor='rgba(100, 44, 10, 0.6)';
 menu.style.webkitBoxShadow=menu.style.boxShadow='';
-menu.style.borderLeftColor=menu.style.borderRightColor='rgba(133,133,133,0.6)';
+menu.style.borderLeftColor=menu.style.borderRightColor='rgba(133,133,133,0.9)';
 
 menu.removeChild(menu.c23);
 delete menu.c23;

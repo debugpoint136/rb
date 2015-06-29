@@ -13,7 +13,7 @@
 	<meta http-equiv="Expires" content="0" />
   </head>
 
-<body style='margin:0px;background-color:black;color:#BCC9BC;font-family:"arial";' onload='readygo()'>
+<body style='margin:0px;background-color:#0A2933;color:#FCF4DC;font-family: "Exo 2", "Helvetica Neue", Helvetica, sans-serif;' onload='readygo()'>
 
 <!--[if IE]>
 <div style='position:absolute;z-index:1000;left:20px;top:40px;font-size:30px;background-color:#ededed;border:solid 8px #858585;padding:30px;'>
@@ -90,7 +90,7 @@ color:#bcc9bc;
 cursor:default;
 }
 .clb4:hover {color:yellow;}
-.clb5 {border:solid 1px transparent;background-color:black;}
+.clb5 {border:solid 1px transparent;background-color:#819090;}
 .clb5:hover {border-color:#45455E;}
 
 .clb6 { /* only for splinter headers */
@@ -100,34 +100,39 @@ padding-left:8px;padding-right:8px;
 .clb6:hover {background-color:rgba(255,255,0,0.2);}
 
 .filehandle { /* for individual files */
-/*background-color:#1D1C47;
-*/
+	background-color: rgba(27, 26, 95, 0.5);
+
 border:solid 1px #474665;
 border-right-width:0px;
 display:inline;
 margin-right:7px;
+	padding-top: 5px;
 }
 .subfamhandle { /* for a subfam */
-/*background-color:#03393A;
-*/
+	background-color: rgba(27, 26, 95, 0.5);
 display:inline;
 border:solid 1px #045152;
 border-right-width:0px;
 margin-right:7px;
+	padding-top: 5px;
 }
 .geohandle { /* for a geo/experiment */
-/*background-color:#1B1A5F;
-*/
+background-color: rgba(27, 26, 95, 0.5);
+
 border:solid 1px #35348E;
 border-right-width:0px;
 display:inline;
 margin-right:7px;
+	padding-top: 5px;
 }
 .handlebutt {
-background-color:#474665;
+background-color:rgba(165, 119, 6, 0.5);
 cursor:pointer;
 padding-left:5px;
 padding-right:5px;
+	margin-top: 18px;
+	padding-bottom: 5px;
+	border-radius: 2px;
 }
 .handlebutt:hover {background-color:#bcc9bc;color:#474665;}
 .showviewbutt {
@@ -176,31 +181,33 @@ td.facet_cell { border:solid 1px rgba(235,219,179,.5); border-right-width:0px; b
 
 div.belowBaselineGradient {
 display:inline-block;
-background:-webkit-gradient(linear,left top,right top,from(#0000ff),to(black));
-background:-moz-linear-gradient(left,#0000ff,black);
+background:-webkit-gradient(linear,left top,right top,from(#0099FF),to(black));
+background:-moz-linear-gradient(left,#0099FF,black);
 height:15px;
 }
 div.aboveBaselineGradient {
 display:inline-block;
-background:-webkit-gradient(linear,left top,right top,from(black),to(#ffff00));
-background:-moz-linear-gradient(left,black,#ffff00);
+background:-webkit-gradient(linear,left top,right top,from(black),to(#A57706));
+background:-moz-linear-gradient(left,black,#A57706);
 height:15px;
 }
 
 </style>
 
 <!-- header -->
-<div id=headerdiv style='padding:10px;border-bottom:solid 1px #004200;font-size:18px;
-background-color:#04033B;'>
-<span style="opacity:0.7;">Transposon-centric view of human genomics &amp; epigenomics data</span>
+<div id="headerdiv" style="padding: 10px; border-bottom-style: solid; border-bottom-width: 1px; border-bottom-color: rgb(0, 66, 0); font-size: 18px; background-color: rgb(83, 104, 112);">
+<span style="opacity:0.7;"><strong>Transposon-centric view of human genomics &amp; epigenomics data</strong></span>
 &nbsp;&nbsp;
 <span class=clb4 id=zoomoutbutt style='display:none;' onclick='zoomout()'>&#10094;ALL&#10095;</span>
 &nbsp;&nbsp;
-<span class=clb4 onclick='toggle1()'>Tracks &#9662;</span>
-<!--
+
+<span class=clb4 onclick='toggle1()'>Load Public Tracks &#9662; </span>
+	<span class=clb4 onclick='toggle1_test()'>Tracks &#9662; </span>
+	<span class=clb4 onclick='toggle2_test()'>Examples &#9662; </span>
+
 &nbsp;&nbsp;
 <span class=clb4 onclick='scatterplot_show_2()'>Scatter plot &#9662;</span>
--->
+
 &nbsp;&nbsp;
 <span class=clb4 onclick='show_info(event)'>Info &#9662;</span>
 &nbsp;&nbsp;
@@ -218,19 +225,19 @@ background-color:#04033B;'>
 		<table id=tkmcm_headerholder cellpadding=0 cellspacing=0><tbody><tr></tr></tbody></table>
 	</td>
 	<td valign=top align=right id=temcm_headerholder></td>
-	<td valign=top style='background-color:#000602;'>
+	<td valign=top style='background-color:#536870;'>
 	  <div style='position:relative;overflow:hidden;' onmousemove='colheader_Mmove(event)' onmouseout='colheader_Mout(event)' onmousedown='colheader_select_Md(event)'>
 	    <div id=mapcolheader_holder style='position:absolute;left:0px;bottom:0px;'></div>
 	  </div>
 	</td>
   </tr>
   <tr>
-	<td valign=top style='background-color:#000602;'>
+	<td valign=top style='background-color:#536870;'>
 	  <div style='position:relative;overflow:hidden;'>
 	    <div id=mcm_tkholder style='position:absolute;top:0px;right:0px;'></div>
 	  </div>
 	</td>
-	<td valign=top style='background-color:#000602;'>
+	<td valign=top style='background-color:#536870;'>
 	  <div style='position:relative;overflow:hidden;'>
 	    <div id=hmheaderdiv style='position:absolute;top:0px;right:0px;padding-right:3px;'></div>
 	  </div>
