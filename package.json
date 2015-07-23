@@ -1,0 +1,22 @@
+{
+  "name": "rb",
+  "version": "1.0.0",
+  "description": "Transposon-centric view of human genomics & epigenomics data : Repeat Browser",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/debugpoint136/rb.git"
+  },
+  "author": "Deepak Purushotham",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/debugpoint136/rb/issues"
+  },
+  "homepage": "https://github.com/debugpoint136/rb",
+  "dependencies": {
+    "gulp": "^3.9.0"
+  }
+}
