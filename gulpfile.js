@@ -8,7 +8,7 @@ var gulp = require('gulp'),
     uglify = require('gulp-uglify');
 
 //var coffeeSources = ['components/coffee/tagline.coffee'];
-var jsSources = ['js/base/*.js'];
+var jsSources = ['app/js/base/*.js'];
 
 //var sassSources = ['components/sass/style.scss'];
 //var htmlSources = ['builds/development/*.html'];
