@@ -2324,12 +2324,15 @@ if(apps.hmtk.main.style.display=="none") {
 }
 menu_hide();
 };
+<<<<<<< HEAD
 
 function toggle2_test(event){ // dpuru : June 25 - Load examples
     var b=gflag.browser;
     var geoAcclst="GSM945316,GSM945317,GSM945318,GSM945319,GSM945320,GSM945321,GSM945322,GSM945323,GSM945324,GSM945325,GSM945326,GSM945853,GSM945854,GSM945855,GSM945856,GSM945857,GSM945858,GSM945859,GSM970217,GSM970218";
     b.ajax_addtracks_names(geoAcclst.split(','));
 };
+=======
+>>>>>>> bb34daa2b4eb11ac778eabfed7d51c45aad0df53
 
 function toggle7_2() {gflag.browser.toggle7();}
 function toggle7_1() {gflag.menu.bbj.toggle7();}
