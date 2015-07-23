@@ -2295,7 +2295,7 @@ Browser.prototype.toggle1=function()
 {
 // show hmtk facet panel
 if(apps.hmtk.main.style.display=="none") {
-	cloakPage();
+/*	cloakPage();
 	var b=this;
 	if(this.trunk) b=this.trunk;
 	b.facet.main.style.display='block';
@@ -2304,7 +2304,20 @@ if(apps.hmtk.main.style.display=="none") {
 	var tmp=b.tkCount();
 	apps.hmtk.custtk2lst.style.display= tmp[1]>0 ? 'block' : 'none';
 	panelFadein(apps.hmtk.main, 100+document.body.scrollLeft, 50+document.body.scrollTop);
+	apps.hmtk.bbj=b;*/
+
+	// * -- this works -- *
+	var b=this;
+	cloakPage();
+	if(this.trunk) b=this.trunk;
+	b.facet.main.style.display='block';
+	stripChild(apps.hmtk.holder,0);
+	apps.hmtk.holder.appendChild(b.facet.main);
+	var tmp=b.tkCount();
+	apps.hmtk.custtk2lst.style.display= tmp[1]>0 ? 'block' : 'none';
+	panelFadein(apps.hmtk.main, 100+document.body.scrollLeft, 50+document.body.scrollTop);
 	apps.hmtk.bbj=b;
+	// -- *
 } else {
 	pagecloak.style.display="none";
 	panelFadeout(apps.hmtk.main);
@@ -10948,7 +10961,9 @@ var d4=dom_create('div',d3);
 d4.className='bigsubmit';
 d.submit=d4;
 d4.count=0;
-d4.addEventListener('click',facet_tklst_addSelected,false);
+/*d4.addEventListener('click',facet_tklst_addSelected,false);*/
+d4.addEventListener('click',facet_tklst_addSelected_repeat,false); // dpuru: 07/08/2015
+
 d4.style.width=120;
 dom_addbutt(d2,'Select all',facet_tklst_toggleall).tofill=true;
 dom_addbutt(d2,'Deselect all',facet_tklst_toggleall).tofill=false;
@@ -11821,6 +11836,8 @@ if(qtconfig.thtype == scale_percentile) {
 	originally set nth=0, but all values are >0 so nth never set to true min
 	***/
 	pth=null; nth=null;
+	return [pth, nth]; // dpuru : 07/08/2015 : data[i] becomes undefined if i = 0
+
 	for(var i=startRidx; i<=stopRidx; i++) {
 		//if(!data[i]) fatalError(i);
 		var start = (i==startRidx) ? startDidx : 0;

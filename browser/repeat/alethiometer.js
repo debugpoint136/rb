@@ -17,7 +17,9 @@ so they have to be represented as custom bed in hubs
 var browser;
 var infodb='hg19repeat';
 var basedb='hg19';
-var datahuburllst=[ 'http://vizhub.wustl.edu/public/hg19/roadmap', 'http://vizhub.wustl.edu/public/hg19/encode'
+/*var datahuburllst=[ 'http://vizhub.wustl.edu/public/hg19/roadmap', 'http://vizhub.wustl.edu/public/hg19/encode'
+];*/ // * -- dpuru -- *
+var datahuburllst=[ 'http://vizhub.wustl.edu/public/hg19/encode'
 ];
 var defaultGeneTrack='refGene';
 
@@ -50,7 +52,8 @@ var qtc_input_a={pr:37,pg:234,pb:23,thtype:0,height:50,uselog:false};
 var qtc_input_u={pr:77,pg:129,pb:73,thtype:0,height:50,uselog:false};
 var qtc_density={pr:194,pg:105,pb:114,thtype:0,height:50,uselog:false};
 
-var mdlst_row=['Sample','Epigenetic Mark','Transcription Regulator'];
+//var mdlst_row=['Sample','Epigenetic Mark','Transcription Regulator']; // dpuru : 06/30/2015
+var mdlst_row=['bigwig','hg19'];
 var temcm_attrlst=['total bp #',
 	'SINE','LINE','LTR','DNA',
 	'Simple_repeat','Low_complexity','Satellite',
@@ -71,7 +74,7 @@ var subfam2id={};
 var id2subfam={};
 var col_runtime=[]; // run time
 var col_runtime_all=[]; // all of the sub families
-//var geo2md={}; // md transfered from hmtk to geo
+// var geo2md={}; // md transfered from hmtk to geo
 var highlight_subfamid=null; // the id of the subfam to be highlighted
 
 // doms
@@ -2023,7 +2026,7 @@ for(var i=0; i<cp.treatment_all.length; i++) {
 	var ctx=canvas.getContext('2d');
 	canvaslst.push([canvas,ctx]);
     if(cp.assayMax == 0 && cp.assayMin == 0){
-        // create a notice
+        // create a notice if there is no data - dpuru : 06/29/2015
         ctx.fillStyle = "rgb(158, 151, 142)";
         ctx.fillText("No signal detected in this assay for this TE consensus", 200, 25);
     } else {
@@ -2039,39 +2042,6 @@ for(var i=0; i<cp.treatment_all.length; i++) {
             cp.sf, wiggleheight, true, false);
     }
 }
-/*    this is what the function is expecting : @8660-base.js
-        var data=arg.data,
-        ctx=arg.ctx,
-        colors=arg.colors,
-        tk=arg.tk,
-        ridx=arg.rid, // for weaver
-        initcoord=arg.initcoord, // for weaver, given for barplot
-        x=arg.x, // will be incremented by weaver insert
-        y=arg.y,
-        pheight=arg.h,
-        pointup=arg.pointup,
-        w=arg.w,
-        tosvg=arg.tosvg;*/
-
-    /*
-    * Example invocation :-
-    *
-    *var svd=this.barplot_base({
-     data:data2[i],
-     ctx:ctx,
-     colors:{p:'rgb('+tkobj.qtc.pr+','+tkobj.qtc.pg+','+tkobj.qtc.pb+')',
-     n:'rgb('+tkobj.qtc.nr+','+tkobj.qtc.ng+','+tkobj.qtc.nb+')',
-     pth:tkobj.qtc.pth,
-     nth:tkobj.qtc.nth,
-     barbg:tkobj.qtc.barplotbg},
-     tk:tkobj,
-     rid:i,
-     x:this.cumoffset(i,r[3]),
-     y:tkobj.qtc.height>=20?densitydecorpaddingtop:0,
-     h:tkobj.qtc.height,
-     pointup:true,
-     tosvg:tosvg});
-     */
 
 /* overlay treat-unique */
 for(i=0; i<cp.treatment_unique.length; i++) {
@@ -2099,18 +2069,26 @@ for(i=0; i<cp.treatment_unique.length; i++) {
 if(id2geo[vobj.geoid].input!=null) {
 	canvaslst=[];
 	for(i=0; i<cp.input_all.length; i++) {
-		var dd=cp.input_all[i];
-		var canvas=cp.tk2canvas[dd[0]];
-		var ctx=canvas.getContext('2d');
-		canvaslst.push([canvas,ctx]);
-		    barplot_base(dd[1],
-			0,dd[1].length,
+		var dd = cp.input_all[i];
+		var canvas = cp.tk2canvas[dd[0]];
+		var ctx = canvas.getContext('2d');
+		canvaslst.push([canvas, ctx]);
+		if (cp.assayMax == 0 && cp.assayMin == 0) {
+			// create a notice if there is no data - dpuru : 06/29/2015
+			ctx.fillStyle = "rgb(158, 151, 142)";
+			ctx.fillText("No signal detected in this assay for this TE consensus", 200, 25);
+		} else {
+		barplot_base(dd[1],
+			0, dd[1].length,
 			ctx,
-			{p:'rgb('+qtc_input_a.pr+','+qtc_input_a.pg+','+qtc_input_a.pb+')',
-			n:'rgb('+qtc_input_a.pr+','+qtc_input_a.pg+','+qtc_input_a.pb+')'},
-			cp.assayMax,cp.assayMin,
-			0,densitydecorpaddingtop,
-			cp.sf,wiggleheight,true,false);
+			{
+				p: 'rgb(' + qtc_input_a.pr + ',' + qtc_input_a.pg + ',' + qtc_input_a.pb + ')',
+				n: 'rgb(' + qtc_input_a.pr + ',' + qtc_input_a.pg + ',' + qtc_input_a.pb + ')'
+			},
+			cp.assayMax, cp.assayMin,
+			0, densitydecorpaddingtop,
+			cp.sf, wiggleheight, true, false)
+		}
 	}
 	// overlay input-unique
 	for(i=0; i<cp.input_unique.length; i++) {
@@ -3023,6 +3001,11 @@ page_makeDoms(
 			fg:'black',
 			call:toggle1_2},
 		},
+	cp_publichub:{
+		htext:'Public track hubs',
+		hbutt1:{text:'&#10005;',call:toggle8_2},
+		hbutt2:{text:'?', call:blog_publichub,},
+		},
 	}
 );
 
@@ -3117,6 +3100,14 @@ d.bbj=browser;
 
 /*** not calling browser_makeDoms
 **/
+// dpuru : 07/08/2015 : Adding facet
+
+browser.browser_makeDoms({
+		mcm:true,
+		facet:true
+});
+
+// -- *
 for(var i=0; i<mdlst_row.length; i++) {
 	browser.mcm.lst.push([mdlst_row[i],0]);
 }
