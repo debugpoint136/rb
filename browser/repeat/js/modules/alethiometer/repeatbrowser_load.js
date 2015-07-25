@@ -75,5 +75,23 @@ function repeatbrowser_load(data)
             input:(v[4].length==0?null:v[4].split(','))
         };
     }
+
+    // -- * test code : dpuru : 07/25/2015 : try to inject user choice to select public hubs here
+    cloakPage();
+    // gflag.browser=this;
+    var d=dom_create('div',document.body,'position:absolute;z-index:100;');
+    gflag.askabouttrack=d;
+    dom_create('div',d,'color:white;font-size:150%;padding-bottom:20px;text-align:center;').innerHTML=
+        'The "'+browser.genome.name+'" genome has been loaded.<br><br>'+
+        'Would you like to go to ...';
+    /*	dom_create('div',d,'display:inline-block;margin-right:20px;',{c:'whitebar',
+     t:'<span style="font-size:140%">C</span>USTOM tracks',
+     clc:toggle7_2});*/
+    if(browser.genome.publichub.lst.length>0) {
+        dom_create('div',d,'display:inline-block;margin-right:20px;',{c:'whitebar',t:'<span style="font-size:140%">P</span>UBLIC hubs <span style="font-size:80%">(30 available)</span>',clc:toggle8_2});
+    }
+    dom_create('div',d,'display:inline-block;',{c:'whitebar',t:'<span style="font-size:140%">G</span>ENOME browser &#187;',clc:toggle9});
+    panelFadein(d,window.innerWidth/2-270,window.innerHeight/2-100);
+// -- *
     repeatbrowser_loadhub_recursive();
 }
