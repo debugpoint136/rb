@@ -1,0 +1,296 @@
+/**
+ * establish genome components with json data
+ * @param data
+ */
+
+Genome.prototype.jsonGenome = function (data) {
+    /* establish genome components with json data
+     */
+    this.name = data.dbname;
+    this.hasGene = data.hasGene;
+    this.noblastdb = data.noblastdb ? true : false;
+
+    for (var i = 0; i < gflag.mdlst.length; i++) {
+        var v = gflag.mdlst[i];
+        if (v.tag == literal_imd) {
+            v.c2p[this.name] = {};
+            v.c2p[this.name][literal_imd_genome] = 1;
+            if (!(literal_imd_genome in v.p2c)) v.p2c[literal_imd_genome] = {};
+            v.p2c[literal_imd_genome][this.name] = 1;
+            stripChild(v.mainul, 0);
+            for (var rt in v.root) {
+                make_mdtree_recursive(rt, v, i, v.mainul);
+            }
+            break;
+        }
+    }
+
+
+    if (data.yearlyMonthlyLength) {
+        this.temporal_ymd = {};
+        for (var i = 0; i < data.yearlyMonthlyLength.length; i++) {
+            var t = data.yearlyMonthlyLength[i];
+            if (t[0] in this.temporal_ymd) {
+                this.temporal_ymd[t[0]][t[1]] = t[2];
+            } else {
+                var a = {};
+                a[t[1]] = t[2];
+                this.temporal_ymd[t[0]] = a;
+            }
+        }
+    }
+
+    this.defaultStuff = {
+        coord: data.defaultPosition,
+        gsvlst: data.defaultGenelist,
+        custtk: {},
+        initmatplot: data.initmatplot,
+        runmode: data.runmode,
+        decor: [],
+    };
+    if (data.defaultDecor) {
+        this.defaultStuff.decor = data.defaultDecor.split(',');
+    }
+
+    if (this.custtk) {
+        var v = data.defaultCustomtracks;
+        if (v) {
+            this.defaultStuff.custtk = v;
+            if (!(FT_bam_c in v)) this.custtk.ui_bam.examplebutt.style.display = 'none';
+            if (!(FT_bed_c in v)) this.custtk.ui_bed.examplebutt.style.display = 'none';
+            if (!(FT_bedgraph_c in v)) this.custtk.ui_bedgraph.examplebutt.style.display = 'none';
+            if (!(FT_bigwighmtk_c in v)) this.custtk.ui_bigwig.examplebutt.style.display = 'none';
+            if (!(FT_cat_c in v)) this.custtk.ui_cat.examplebutt.style.display = 'none';
+            if (!(FT_anno_c in v)) this.custtk.ui_hammock.examplebutt.style.display = 'none';
+            if (!(FT_huburl in v)) this.custtk.ui_hub.examplebutt.style.display = 'none';
+            if (!(FT_lr_c in v)) this.custtk.ui_lr.examplebutt.style.display = 'none';
+            if (FT_weaver_c in v) {
+                var g = this;
+                for (var qn in v[FT_weaver_c]) {
+                    dom_create('div',
+                        this.custtk.ui_weaver.weavertkholder,
+                        'display:inline-block;margin:10px;',
+                        {t: qn, c: 'clb', clc: weaver_custtk_example(g, qn, v[FT_weaver_c][qn])});
+                }
+            }
+        }
+    }
+
+    if (data.keggSpeciesCode) {
+        this.keggSpeciesCode = data.keggSpeciesCode;
+    }
+    if (this.init_genome_param.gsm) {
+        this.make_gsm_ui();
+    }
+
+    /* some tracks are associated with specific regions
+     assume these tracks are all assay datasets
+     */
+    if ('track2Regions' in data) {
+        for (var n in data.track2Regions) {
+            var tk = this.hmtk[n];
+            if (tk != undefined) {
+                var o = data.track2Regions[n];
+                tk.regions = [o[0], o[1].split(',')];
+            }
+        }
+    }
+
+    this.decorInfo = {};
+    if (data.decorJson) {
+        for (var n in data.decorJson) {
+            decorJson_parse(data.decorJson[n], this.decorInfo);
+        }
+    }
+    this.searchgenetknames = [];
+    for (var tkn in this.decorInfo) {
+        var tk = this.decorInfo[tkn];
+        if (!tk.filetype) {
+            print2console('filetype missing for track ' + tkn, 2);
+            delete this.decorInfo[tkn];
+            continue;
+        }
+        var n = tk.filetype.toLowerCase();
+        tk.ft = FT2native.indexOf(n);
+        if (tk.ft == -1) {
+            tk.ft = FT2verbal.indexOf(n);
+        }
+        if (tk.ft == -1) {
+            print2console('Wrong file type for ' + tkn + ': ' + n, 2);
+            delete this.decorInfo[tkn];
+            continue;
+        }
+        delete tk.filetype;
+
+        parseHubtrack(tk);
+
+        if (tk.ft == FT_weaver_c) {
+            if (!tk.querygenome) {
+                print2console('Missing querygenome for ' + tkn, 2);
+                delete this.decorInfo[tkn];
+                continue;
+            }
+            tk.cotton = tk.querygenome;
+            delete tk.querygenome;
+        }
+        if (tk.categories) {
+            tk.cateInfo = tk.categories;
+            delete tk.categories;
+        }
+        if (tk.isgene && tk.dbsearch) {
+            this.searchgenetknames.push(tk.name);
+        }
+    }
+    this.tablist_decor = document.createElement('div');
+    this.tablist_decor.style.margin = 10;
+    dom_maketree(data.decorJson, this.tablist_decor, decorTrackcell_make);
+
+    this.cytoband = {};
+    if ('cytoband' in data) {
+        for (var i = 0; i < data.cytoband.length; i++) {
+            if (data.cytoband[i][0] in this.cytoband)
+                this.cytoband[data.cytoband[i][0]].push(data.cytoband[i].slice(1, 5));
+            else
+                this.cytoband[data.cytoband[i][0]] = [data.cytoband[i].slice(1, 5)];
+        }
+    }
+
+    /* scaffold
+     */
+    this.scaffold = {p2c: {}, c2p: {}, len: {}, current: [], toadd: [], move: {}};
+    for (var i = 0; i < data.scaffoldInfo.length; i++) {
+        var lst = data.scaffoldInfo[i];
+        this.scaffold.c2p[lst[1]] = lst[0];
+        if (!(lst[0] in this.scaffold.p2c)) {
+            this.scaffold.p2c[lst[0]] = {};
+        }
+        this.scaffold.p2c[lst[0]][lst[1]] = 1;
+        if (lst[2] > 0) {
+            // child is sequence
+            this.scaffold.len[lst[1]] = lst[2];
+        }
+    }
+    this.scaffold.current = [];
+    var lst = data.defaultScaffold.split(',');
+    for (i = 0; i < lst.length; i++) {
+        if (lst[i].length > 0) {
+            if (lst[i] in this.scaffold.len) {
+                this.scaffold.current.push(lst[i]);
+            } else {
+                print2console('Invalid scaffold sequence name: ' + lst[i], 2);
+            }
+        }
+    }
+    var t = document.createElement('table');
+    t.cellSpacing = 0;
+    t.cellPadding = 2;
+    this.scaffold.overview = {
+        holder: t,
+        maxw: 800,
+        trlst: [],
+        pwidth: {},
+        barheight: 14,
+    };
+
+    /* linkage group
+     */
+    if (data.linkagegroup) {
+        var hash = {};
+        var order = [];
+        var glen = {}; // 'len' of each group: biggest genetic distance
+        var s2g = {}; // seq 2 group
+        for (var i = 0; i < data.linkagegroup.length; i++) {
+            var t = data.linkagegroup[i];
+            // seq, grp, dist, width, strand
+            if (t[1] in hash) {
+                hash[t[1]].push({n: t[0], d: t[2], w: t[3], s: t[4]});
+                if (t[2] > glen[t[1]]) {
+                    glen[t[1]] = t[2];
+                }
+            } else {
+                order.push(t[1]);
+                glen[t[1]] = t[2];
+                hash[t[1]] = [{n: t[0], d: t[2], w: t[3], s: t[4]}];
+            }
+            s2g[t[0]] = t[1];
+        }
+        this.linkagegroup = {
+            hash: hash,
+            totalnum: data.linkagegroup.length,
+            maxw: Math.max(800, document.body.clientWidth - 400),
+            order: order,
+            len: glen,
+            c_for: 'rgb(0,102,0)',
+            c_rev: 'rgb(255,102,0)',
+            c_un: '#a8a8a8',
+            h_top: 4,
+            h_link: 40,
+            h_bottom: 10,
+        };
+        this.scaffold.tolnkgrp = s2g;
+    }
+
+// make scaffold panel after parsing linkage group
+    this.scfdoverview_makepanel();
+
+    /* public hubs */
+    this.publichub = {holder: document.createElement('div'), lst: []};
+//this.publichub.holder.style.marginBottom=20;
+    this.publichub.holder.style.width = 1200;
+    if (data.publichub && data.publichub.length > 0) {
+        for (var i = 0; i < data.publichub.length; i++) {
+            var hub = data.publichub[i];
+            var childholder = this.publichub_makehandle(hub, this.publichub.holder);
+            if (hub.hublist) {
+                for (var j = 0; j < hub.hublist.length; j++) {
+                    this.publichub_makehandle(hub.hublist[j], childholder);
+                }
+            }
+        }
+    } else {
+        this.publichub.holder.className = 'alertmsg';
+        this.publichub.holder.style.color = 'white';
+        this.publichub.holder.innerHTML = 'There are no public track hubs available for this genome.';
+    }
+
+
+    /* prepare bev panel, can't do this in Genome, requires scfd info
+     */
+    if (apps.bev) {
+        this.bev.main = document.createElement('div');
+        var d = make_headertable(this.bev.main);
+        d._h.style.textAlign = 'left';
+        var t = dom_addrowbutt(d._h, [
+                {text: 'Add track', pad: true, call: bev_addtrack_invoketkselect},
+                {text: 'Add gene set', pad: true, call: bev_showgeneset},
+                {text: '&#9881; Configure', pad: true, call: bev_config},
+                {text: 'Screenshot', pad: true, call: bev_svg}],
+            'margin:0px 20px;',
+            colorCentral.background_faint_5);
+        this.bev.main.svgbutt = t.firstChild.firstChild.childNodes[3];
+        this.bev.main.svgbutt.addEventListener('mousedown', bev_svgbutt_md, false);
+        this.bev.main.svgsays = dom_addtext(d._h);
+        var d2 = dom_create('div', d._c, 'height:600px;overflow-y:scroll;');
+        this.bev.viewtable = dom_create('table', d2);
+        this.bev.chrlst = [];
+        var lst = this.scaffold.current;
+        for (var i = 0; i < lst.length; i++) {
+            /* each ele:
+             0. chr name
+             1. canvas size, spnum
+             2. ideogram <canvas>
+             3. <td> to hold track canvas
+             */
+            this.bev.chrlst.push([lst[i], 0, null]);
+        }
+        this.bev.config = {
+            maxpxwidth: document.body.clientWidth - 300,
+            chrbarheight: 14,
+            chrbarminheight: 6, // <= this number chrbar will be hidden
+        };
+        menu.c40.says.innerHTML = this.bev.config.maxpxwidth;
+        this.bev.tklst = [];
+        this.bev_prepare();
+        this.bev_draw();
+    }
+};
