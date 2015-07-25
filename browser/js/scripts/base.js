@@ -991,6 +991,7 @@ return this;
 
 Genome.prototype.jsonGenome=function(data)
 {
+		console.log("enter: jsonGenome .. "); // dpuru : LOG
 /* establish genome components with json data
 */
 this.name=data.dbname;
@@ -1008,6 +1009,7 @@ for(var i=0; i<gflag.mdlst.length; i++) {
 		for(var rt in v.root) {
 			make_mdtree_recursive(rt,v,i,v.mainul);
 		}
+		console.log("exit: jsonGenome .. "); // dpuru : LOG
 		break;
 	}
 }
@@ -2157,7 +2159,7 @@ pica.style.display='none';
 * */
 function toggle1(event){
 	// delete param.askabouttrack;
-    cp_publichub={htext:'Public track hubs',
+    /*cp_publichub={htext:'Public track hubs',
         hbutt1:{text:'&#10005;',call:toggle8_2},
         hbutt2:{text:'?', call:blog_publichub,},
     };
@@ -2168,8 +2170,8 @@ function toggle1(event){
     apps.publichub.holder=dom_create('div',d2,'margin:25px 0px 20px 0px;width:800px;');
     dom_create('div',d2,'color:white;').innerHTML='After loading a hub, you can find the tracks in <span class=clb3 onclick=pubs2facet()>track table</span>.<br>'+
         'We welcome you to <a href="http://egg.wustl.edu/+" target=_blank>contact us</a> and publish your data as public track hubs.';
-
-	cloakPage();
+*/
+/*	cloakPage();
 	// gflag.browser=this;
 	var d=dom_create('div',document.body,'position:absolute;z-index:100;');
 	gflag.askabouttrack=d;
@@ -2183,7 +2185,8 @@ function toggle1(event){
 		dom_create('div',d,'display:inline-block;margin-right:20px;',{c:'whitebar',t:'<span style="font-size:140%">P</span>UBLIC hubs <span style="font-size:80%">(30 available)</span>',clc:toggle8_2});
 	}
 	dom_create('div',d,'display:inline-block;',{c:'whitebar',t:'<span style="font-size:140%">G</span>ENOME browser &#187;',clc:toggle9});
-	panelFadein(d,window.innerWidth/2-270,window.innerHeight/2-100);
+	panelFadein(d,window.innerWidth/2-270,window.innerHeight/2-100);*/
+
 }
 /*function toggle1(event)
 {
@@ -2295,19 +2298,12 @@ Browser.prototype.toggle1=function()
 {
 // show hmtk facet panel
 if(apps.hmtk.main.style.display=="none") {
-/*	cloakPage();
 	var b=this;
-	if(this.trunk) b=this.trunk;
-	b.facet.main.style.display='block';
-	stripChild(apps.hmtk.holder,0);
-	apps.hmtk.holder.appendChild(b.facet.main);
-	var tmp=b.tkCount();
-	apps.hmtk.custtk2lst.style.display= tmp[1]>0 ? 'block' : 'none';
-	panelFadein(apps.hmtk.main, 100+document.body.scrollLeft, 50+document.body.scrollTop);
-	apps.hmtk.bbj=b;*/
-
-	// * -- this works -- *
-	var b=this;
+    // dpuru : attempting to load the encode dataset upfront
+/*    url="http://vizhub.wustl.edu/public/hg19/encode.md";
+    callback="loadhub_urljson_cb";
+    b.ajaxText('loaddatahub=on&url='+url, function(text){b.loadhub_urljson_cb(text,url,callback);});
+*/
 	cloakPage();
 	if(this.trunk) b=this.trunk;
 	b.facet.main.style.display='block';
@@ -2317,22 +2313,30 @@ if(apps.hmtk.main.style.display=="none") {
 	apps.hmtk.custtk2lst.style.display= tmp[1]>0 ? 'block' : 'none';
 	panelFadein(apps.hmtk.main, 100+document.body.scrollLeft, 50+document.body.scrollTop);
 	apps.hmtk.bbj=b;
-	// -- *
+
+	// cloakPage();
+	// gflag.browser=this;
+	/*var d=dom_create('div',document.body,'position:absolute;z-index:100;');
+	gflag.askabouttrack=d;
+	dom_create('div',d,'color:white;font-size:150%;padding-bottom:20px;text-align:center;').innerHTML=
+		'The "'+b.genome.name+'" genome has been loaded.<br><br>'+
+		'Would you like to go to ...';
+	if(b.genome.publichub.lst.length>0) {
+		dom_create('div',d,'display:inline-block;margin-right:20px;',{c:'whitebar',t:'<span style="font-size:140%">P</span>UBLIC hubs <span style="font-size:80%">('+b.genome.publichub.lst.length+' available)</span>',clc:toggle8_2});
+	}*/
+
 } else {
 	pagecloak.style.display="none";
 	panelFadeout(apps.hmtk.main);
 }
 menu_hide();
 };
-<<<<<<< HEAD
 
 function toggle2_test(event){ // dpuru : June 25 - Load examples
     var b=gflag.browser;
     var geoAcclst="GSM945316,GSM945317,GSM945318,GSM945319,GSM945320,GSM945321,GSM945322,GSM945323,GSM945324,GSM945325,GSM945326,GSM945853,GSM945854,GSM945855,GSM945856,GSM945857,GSM945858,GSM945859,GSM970217,GSM970218";
     b.ajax_addtracks_names(geoAcclst.split(','));
 };
-=======
->>>>>>> bb34daa2b4eb11ac778eabfed7d51c45aad0df53
 
 function toggle7_2() {gflag.browser.toggle7();}
 function toggle7_1() {gflag.menu.bbj.toggle7();}
@@ -10964,9 +10968,8 @@ var d4=dom_create('div',d3);
 d4.className='bigsubmit';
 d.submit=d4;
 d4.count=0;
-/*d4.addEventListener('click',facet_tklst_addSelected,false);*/
-d4.addEventListener('click',facet_tklst_addSelected_repeat,false); // dpuru: 07/08/2015
-
+// d4.addEventListener('click',facet_tklst_addSelected,false); // dpuru : 07/08/2015 - changing this to repeat specific
+d4.addEventListener('click',facet_tklst_addSelected_repeat,false); // dpuru : added this
 d4.style.width=120;
 dom_addbutt(d2,'Select all',facet_tklst_toggleall).tofill=true;
 dom_addbutt(d2,'Deselect all',facet_tklst_toggleall).tofill=false;
@@ -11839,8 +11842,6 @@ if(qtconfig.thtype == scale_percentile) {
 	originally set nth=0, but all values are >0 so nth never set to true min
 	***/
 	pth=null; nth=null;
-	return [pth, nth]; // dpuru : 07/08/2015 : data[i] becomes undefined if i = 0
-
 	for(var i=startRidx; i<=stopRidx; i++) {
 		//if(!data[i]) fatalError(i);
 		var start = (i==startRidx) ? startDidx : 0;
@@ -19443,6 +19444,8 @@ if(this.__pending_hubjson) {
 
 function load_metadata_json(raw)
 {
+	console.log("enter: load_metadata_json.."); // dpuru:LOG
+
 var obj={
 	c2p:{},
 	p2c:{},
@@ -19506,6 +19509,8 @@ return idx;
 
 function make_mdtree_recursive(term, mdobj, idx, holder)
 {
+		console.log(" ------------------ enter: make_mdtree_recursive..process " + term); // dpuru:LOG
+
 var li=dom_create('li',holder);
 // a checkbox for each term, no matter child or parent
 var cb=dom_create('input',li);
@@ -19529,6 +19534,7 @@ if(term in mdobj.p2c) {
 		(term in mdobj.idx2desc ? '<div style="font-size:70%;opacity:.7;">'+mdobj.idx2desc[term]+'</div>' : '')
 	);
 }
+		console.log("------------------ exit: make_mdtree_recursive.."); // dpuru:LOG
 }
 
 
@@ -24882,15 +24888,19 @@ Browser.prototype.loadhub_urljson=function(url,callback)
 /* load datahub from json text file by url
 oh, must use trunk please..
 */
+console.log("Entering loadhub_urljson .. "); // dpuru : LOG
 var bbj=this.trunk?this.trunk:this;
 bbj.shieldOn();
 bbj.cloak();
 bbj.ajaxText('loaddatahub=on&url='+url, function(text){bbj.loadhub_urljson_cb(text,url,callback);}
 );
+	console.log("Exiting loadhub_urljson .. "); // dpuru : LOG
 };
 
 Browser.prototype.loadhub_urljson_cb=function(text,url,callback)
 {
+	console.log("Entering loadhub_urljson_cb .. "); // dpuru : LOG
+
 var that = this;
 if(this.genome.custtk) {
 	this.genome.custtk.ui_hub.submit_butt.disabled=false;
@@ -25525,6 +25535,9 @@ sourcehub: either url or file name
 attributes may come in as raw or cooked
 */
 // need genome to validate native tk
+
+console.log("Enter: loaddatahub_json.."); // dpuru:LOG
+
 if(!this.genome) fatalError('Cannot parse hub: genome is not ready');
 
 // brush off
@@ -25801,11 +25814,16 @@ for(var i=0; i<json.length; i++) {
 /* go over list again to process all stuff
 all custom tracks go into ghm (where=1), natives go under it (where=2)
 */
+
+console.log("came to go over section: loaddatahub_json.."); // dpuru:LOG
+
 for(var i=0; i<json.length; i++) {
 	var obj=json[i];
 	var tag=obj.type;
 	if(hubtagistrack(tag)) {
 		var tk=this.parse_custom_track(obj);
+		console.log(" - - - - - - - - - - - - - - - - - - - -  : Processing track : " + tk.label); // dpuru:LOG
+
 		if(!tk) {
 			continue;
 		}
@@ -26016,8 +26034,35 @@ if(this.__golden_loadhubcb) {
 	// to prevent default processing of tracks
 	this.__golden_loadhubcb();
 } else {
-	this.ajax_loadbbjdata(ibp);
+	// this.ajax_loadbbjdata(ibp);
+
+		// * -- dpuru : Plugging this code here - to call this section once genome.hmtk is ready
+
+		var newhash={};
+		for(var n in this.genome.hmtk) {
+			var t=this.genome.hmtk[n];
+			if(!t.geolst) continue;
+			for(var i=0; i<t.geolst.length; i++) {
+				var gsm=t.geolst[i];
+				if(!(gsm in geo2id)) continue;
+				var gid=geo2id[gsm];
+				t.label=id2geo[gid].label;
+				newhash[gsm]=t;
+				geoid2realtrack[gid]=n;
+				realtrack2geoid[n]=gid;
+			}
+		}
+		this.genome.hmtk=newhash;
+		this.move.styleLeft=0;
+		this.hmdiv.style.left=0;
+		pagemask();
+		if (Object.keys(newhash).length){
+				this.ajax_addtracks_names(geopreload.split(','));
+		} // dpuru : CLEANME
+		// -- *
 }
+console.log("exit: loaddatahub_json.."); // dpuru:LOG
+
 };
 
 
