@@ -10,7 +10,9 @@ function tkentryclick_add2gg(event)
     var b=vobj.add_experiment_butt;
     b.disabled=true;
     b.innerHTML='&nbsp;&nbsp;&nbsp;Running...&nbsp;&nbsp;&nbsp;';
-    var tk=browser.findTrack(event.target.tkname);
+    // var tk=browser.findTrack(event.target.tkname);
+    var tk=browser.findTrack(event.target.tkobj.name); // was tkname - was not working : dpuru : 07/01/2015
+
     if(tk.geoid==vobj.geoid) {
         shake_dom(menu);
         return;

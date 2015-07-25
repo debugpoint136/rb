@@ -711,6 +711,39 @@ function pane_hide() {
 }
 
 /**
+ * @param v
+ * @param max
+ * @param min
+ */
+
+function htmltext_bigmapcell(v,max,min) {
+    return '<div class=squarecell style="display:inline-block;background-color:'+
+        ((v>0)?'rgba('+pr+','+pg+','+pb+','+(v/max)+');':'rgba('+nr+','+ng+','+nb+','+(v/min)+');')+
+        '"> </div> '+v.toFixed(3);
+}
+/**
+ * htmltext_subfaminfo - light foreground?
+ * @param sfid
+ * @param lightfg
+ */
+
+function htmltext_subfaminfo(sfid, lightfg) {
+// light foreground?
+    var ii=id2subfam[sfid];
+    return '<table>'+
+        '<tr><td class=tph>subfamily</td><td><span style="font-weight:bold;'+(lightfg?'color:white;':'')+'">'+
+        ii.name+'</span></td></tr>'+
+        '<tr><td class=tph>family</td><td>'+ii.fam+'</td></tr>'+
+        '<tr><td class=tph>class</td><td>'+ii.cls+'</td></tr>'+
+        '<tr><td class=tph>total bp #</td><td>'+ii.genomelen+'</td></tr>'+
+        '<tr><td class=tph>genome copy #</td><td>'+ii.copycount+'</td></tr>'+
+        (ii.consensuslen>0 ?
+            '<tr><td class=tph>consensus length</td><td>'+ii.consensuslen+'</td></tr>':
+                '<tr><td class=tph colspan=2 style="text-align:left">does not have consensus</td></tr>'
+        )+
+        '</table>';
+}
+/**
  * make_subfamhandle
  * @param subfamid
  */
@@ -1989,6 +2022,69 @@ function make_bevcolorscale(vobj,bev,key)
     /*over*/
 }
 /**
+ * take the bev object
+ * @param obj
+ */
+
+function colorscale_slidermoved(obj)
+{
+    /* take the bev object
+     */
+    var x=parseInt(obj.csbj.sliderpad.style.left);
+    if(x<0) {
+        x=obj.csbj.sliderpad.style.left=
+            obj.csbj.sliderpole.style.left=0;
+    } else if(x>colorscalewidth) {
+        x=obj.csbj.sliderpad.style.left=obj.csbj.sliderpole.style.left=colorscalewidth;
+    }
+    var bv=obj.minv+x*obj.csbj.scorestep;
+    obj.csbj.baseline=bv;
+    obj.csbj.sliderpad.innerHTML=neatstr(bv);
+    obj.csbj.lowGradient.style.width=x;
+    obj.csbj.highGradient.style.width=colorscalewidth-x;
+}
+/**
+ * @param event
+ */
+
+function colorscale_slider_md(event)
+{
+    event.preventDefault();
+    document.body.addEventListener('mousemove',colorscale_slider_mm,false);
+    document.body.addEventListener('mouseup',colorscale_slider_mu,false);
+    gflag.css={bev:event.target.bev,
+        viewkey:event.target.viewkey,
+        oldx:event.clientX,
+    }
+}
+/**
+ * @param event
+ */
+
+function colorscale_slider_mm(event)
+{
+    var bev=gflag.css.bev;
+    var left=parseInt(bev.csbj.sliderpad.style.left);
+    var dif=event.clientX-gflag.css.oldx;
+    if(dif>0) {
+        bev.csbj.sliderpad.style.left=bev.csbj.sliderpole.style.left=Math.min(colorscalewidth,left+dif);
+    } else {
+        bev.csbj.sliderpad.style.left=bev.csbj.sliderpole.style.left=Math.max(0,left+dif);
+    }
+    colorscale_slidermoved(bev);
+    gflag.css.oldx=event.clientX;
+}
+/**
+ * @param event
+ */
+
+function colorscale_slider_mu(event)
+{
+    document.body.removeEventListener('mousemove',colorscale_slider_mm,false);
+    document.body.removeEventListener('mouseup',colorscale_slider_mu,false);
+    draw_genomebev_experiment(apps.gg.view[gflag.css.viewkey],gflag.css.bev);
+}
+/**
  * @param event
  */
 
@@ -2246,6 +2342,144 @@ function draw_consensusPlot(key)
     /* over */
 }
 /**
+ * mouse down
+ * @param event
+ */
+
+function consensusPlot_md(event)
+{
+// pan
+    if(event.button!=0) return;
+    event.preventDefault();
+    document.body.addEventListener('mousemove',consensusPlot_mm,false);
+    document.body.addEventListener('mouseup',consensusPlot_mu,false);
+    gflag.pan={cp:apps.gg.view[event.target.key].consensusplot,oldx:event.clientX};
+}
+
+
+/**
+ * @param event
+ */
+
+function consensusPlot_mm(event)
+{
+    var inc=event.clientX-gflag.pan.oldx;
+    var lst=gflag.pan.cp.scrollable;
+    var newl=parseInt(lst[0].style.left)+inc;
+    for(var i=0; i<lst.length; i++)
+        lst[i].style.left=newl;
+    gflag.pan.oldx=event.clientX;
+}
+/**
+ * @param event
+ */
+
+function consensusPlot_mu(event)
+{
+    gflag.pan.cp.preset_left=parseInt(gflag.pan.cp.scrollable[0].style.left);
+    document.body.removeEventListener('mousemove',consensusPlot_mm,false);
+    document.body.removeEventListener('mouseup',consensusPlot_mu,false);
+}
+/**
+ * @param event
+ */
+
+function consensusPlot_ruler_md(event)
+{
+    if(event.button!=0) return;
+    event.preventDefault();
+    var pos=absolutePosition(event.target.parentNode);
+    var pos2=absolutePosition(event.target);
+    var z=gflag.zoomin;
+    z.x=event.clientX;
+    z.x0=event.clientX; // original x
+    z.borderleft=Math.max(pos[0],pos2[0]);
+    z.borderright=Math.min(pos[0]+event.target.parentNode.clientWidth,pos2[0]+event.target.width);
+    z.inuse=true;
+    z.viewkey=event.target.key;
+    indicator.style.display='block';
+    indicator.style.width=1;
+    indicator.style.height=event.target.parentNode.parentNode.parentNode.parentNode.clientHeight;
+    indicator.style.left=event.clientX;
+    indicator.style.top=pos[1]-1;
+    document.body.addEventListener('mousemove', consensusPlot_ruler_mm,false);
+    document.body.addEventListener('mouseup', consensusPlot_ruler_mu,false);
+}
+/**
+ * @param event
+ */
+
+function consensusPlot_ruler_mu(event)
+{
+    if(indicator.style.borderColor=='blue') {
+        var z=gflag.zoomin;
+        z.inuse=false;
+        var cp=apps.gg.view[z.viewkey].consensusplot;
+        // set new values of .preset_left and .sf
+        var start=parseInt(indicator.style.left)-z.borderleft-cp.preset_left;
+        var width=parseInt(indicator.style.width);
+        var outbp=start/cp.sf;
+        cp.sf=800/(width/cp.sf);
+        cp.preset_left=0-outbp*cp.sf;
+        draw_consensusPlot(z.viewkey);
+        cp.allbutt.style.display='inline';
+    }
+    indicator.style.display='none';
+    document.body.removeEventListener('mousemove', consensusPlot_ruler_mm,false);
+    document.body.removeEventListener('mouseup', consensusPlot_ruler_mu,false);
+}
+/**
+ * @param event
+ */
+
+function consensusPlot_ruler_mm(event)
+{
+// duplicative
+    var z=gflag.zoomin;
+    if(event.clientX==z.x) return;
+    var w;
+    if(event.clientX>z.x0) {
+        // on right of original point, only change width
+        if(event.clientX>z.borderright)
+            return;
+        w=indicator.style.width=parseInt(indicator.style.width)+event.clientX-z.x;
+    } else {
+        // on left of original point, change both width and left
+        if(event.clientX<z.borderleft)
+            return;
+        var c=event.clientX-z.x;
+        w=indicator.style.width=parseInt(indicator.style.width)-c;
+        indicator.style.left=parseInt(indicator.style.left)+c;
+    }
+    z.x=event.clientX;
+    indicator.firstChild.style.backgroundColor=indicator.style.borderColor=
+        (w/apps.gg.view[z.viewkey].consensusplot.sf>80) ? 'blue' : 'red';
+}
+/**
+ * @param event
+ */
+
+function consensusPlot_showall(event)
+{
+    event.target.style.display='none';
+    var vobj=apps.gg.view[event.target.key];
+    var cp=vobj.consensusplot;
+    cp.preset_left=0;
+    cp.sf=800/id2subfam[vobj.subfamid].consensuslen;
+    draw_consensusPlot(event.target.key);
+}
+/**
+ * @param event
+ */
+
+function click_gghandle(event)
+{
+    var t=event.target;
+    while(t.className!='skewbox_butt') t=t.parentNode;
+    view_gg(t.viewkey);
+    indicator4fly(apps.gg.handleholder,apps.gg.holder,false);
+}
+/**
  * @param key
  */
 
@@ -2474,6 +2708,60 @@ function genomebev_splinter_mu()
                     chip.alethiometer_splinter_build(data);
                 });
 }
+/**
+ * @param data
+ */
+
+Browser.prototype.alethiometer_splinter_build=function(data)
+{
+    this.jsonDsp(data);
+    this.jsonTrackdata(data);
+    /* now that track display objects are made, need to update its properties
+     - change label
+     - change default rendering style
+     */
+    var gi=id2geo[this.viewobj.geoid];
+    for(var i=0; i<this.tklst.length; i++) {
+        var tk=this.tklst[i];
+        if(tk.ft==FT_bed_n || tk.ft==FT_anno_n) {
+            // a bed track
+            if(tk.name in browser.genome.decorInfo) {
+                /* this is a native bed decor
+                 assume it is a gene, need to light up its bedcolor
+                 */
+                tk.qtc.bedcolor=geneTrackColor;
+            } else {
+                /* this is a subfam track!!
+                 which are not formally registered
+                 */
+                qtc_paramCopy(defaultQtcStyle.ft1, tk.qtc);
+                tk.qtc.isrmsk=true;
+                tk.label=id2subfam[this.viewobj.subfamid].name;
+            }
+            tk.qtc.textcolor=colorCentral.foreground;
+            tk.qtc.fontsize='8pt';
+        } else if(tk.ft==FT_bedgraph_n) {
+            // experimental assay tracks
+            tk.qtc.height=40;
+            if(this.viewobj.__tkistreatment[tk.name]) {
+                // a treatment track
+                qtc_paramCopy(qtc_treat_u, tk.qtc);
+                tk.label=(gi.input==null?'':'treatment: ')+tk.name;
+            } else {
+                // then it must be input
+                qtc_paramCopy(qtc_input_u, tk.qtc);
+                tk.label='input: '+tk.name;
+            }
+        }
+        tk.canvas.splinterTag=this.splinterTag;
+        tk.canvas.removeEventListener('mouseout',track_Mout,false);
+        tk.canvas.addEventListener('mouseout',pica_hide,false);
+    }
+    this.drawRuler_browser(false);
+    this.drawTrack_browser_all();
+    this.drawIdeogram_browser(false);
+};
+
 /**
  * __splinter__
  * @param event
@@ -2727,7 +3015,9 @@ function tkentryclick_add2gg(event)
     var b=vobj.add_experiment_butt;
     b.disabled=true;
     b.innerHTML='&nbsp;&nbsp;&nbsp;Running...&nbsp;&nbsp;&nbsp;';
-    var tk=browser.findTrack(event.target.tkname);
+    // var tk=browser.findTrack(event.target.tkname);
+    var tk=browser.findTrack(event.target.tkobj.name); // was tkname - was not working : dpuru : 07/01/2015
+
     if(tk.geoid==vobj.geoid) {
         shake_dom(menu);
         return;
