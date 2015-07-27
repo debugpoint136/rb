@@ -1,0 +1,512 @@
+/**
+ * __jhub__ parsing a big json blob for:
+ - loading datahub
+ - recovering session
+ - embed
+
+ - sourcehub: either url or file name
+
+ - attributes may come in as raw or cooked
+ * @param json
+ * @param sourcehub
+ */
+
+Browser.prototype.loaddatahub_json = function (json, sourcehub) {
+
+    /* need genome to validate native tk*/
+    if (!this.genome) fatalError('Cannot parse hub: genome is not ready');
+
+// brush off
+    var err_notype = 0;
+    var i = 0;
+    while (i < json.length) {
+        var o = json[i];
+        if (!o.type) {
+            err_notype++;
+            json.splice(i, 1);
+        } else {
+            o.type = o.type.toLowerCase();
+            i++;
+        }
+    } //parses 1 time
+    if (err_notype) print2console(err_notype + ' items without type attribute dropped from hub', 2);
+
+// check for duplicating tkurl
+    var uh = {};
+    var i = 0;
+    while (i < json.length) {
+        var o = json[i];
+        if (hubtagistrack(o.type) && o.url) {
+            if (o.url in uh) {
+                var m = 'Track with duplicating URL removed: ' + o.name + ' ' + o.url;
+                print2console(m, 1);
+                alertbox_addmsg({text: m});
+                json.splice(i, 1);
+                continue;
+            } else {
+                uh[o.url] = 1;
+            }
+        }
+        i++;
+    } //parses 2 times
+
+    /* initiate param
+     */
+    if (!this.init_bbj_param) {
+        this.init_bbj_param = {};
+    }
+    var ibp = this.init_bbj_param;
+    if (!ibp.tklst) {
+        ibp.tklst = [];
+    }
+    if (!ibp.cmtk) {
+        ibp.cmtk = [];
+    }
+    if (!ibp.matplot) {
+        ibp.matplot = [];
+    }
+    if (!ibp.mcm_termlst) {
+        ibp.mcm_termlst = [];
+    }
+    if (!ibp.track_order) {
+        ibp.track_order = [];
+    }
+
+    /* compatible with single-vocabulary case
+     simply convert to vocabulary_set/metadata and get done with it
+     "mdkey" is reserved word
+     */
+    var convertmd = false;
+    var md_obj = null;
+    for (var i = 0; i < json.length; i++) {
+        var obj = json[i];
+        if (obj.type != 'metadata') continue;
+        /*** the metadata object must not be deleted!!
+         or else shared mdobj won't be put in __hubmdvlookup
+         */
+        md_obj = obj;
+        if (!obj.vocabulary_set) obj.vocabulary_set = {};
+        if (obj.vocabulary) {
+            obj.vocabulary_set.mdkey = {
+                vocabulary: obj.vocabulary,
+                terms: obj.terms,
+                source: sourcehub,
+            };
+            delete obj.vocabulary;
+            if (obj.show_terms) {
+                obj.show_terms = {mdkey: obj.show_terms};
+            } else if (obj.show) {
+                obj.show_terms = {mdkey: obj.show};
+                delete obj.show;
+            }
+            convertmd = true;
+        } else if (obj.vocabulary_file_url) {
+            obj.vocabulary_set.mdkey = obj.vocabulary_file_url;
+            if (obj.show_terms) {
+                obj.show_terms = {mdkey: obj.show_terms};
+            } else if (obj.show) {
+                obj.show_terms = {mdkey: obj.show};
+                delete obj.show;
+            }
+            convertmd = true;
+            delete obj.vocabulary_file_url;
+        }
+        break;
+    } //parses 3 times
+    if (convertmd) {
+        // deal with obsolete track md attributes
+        var err1 = 0, err2 = 0;
+        for (var i = 0; i < json.length; i++) {
+            var obj = json[i];
+            if (!hubtagistrack(obj.type)) continue;
+            if (obj.annotation) {
+                err1++;
+            } else if (obj.custom_annotation) {
+                // backward compatible
+                err2++;
+                obj.metadata = {mdkey: obj.custom_annotation};
+                delete obj.custom_annotation;
+            } else if (obj.metadata) {
+                var v = obj.metadata;
+                obj.metadata = {mdkey: v};
+            }
+        }
+        if (err1) {
+            alertbox_addmsg({text: 'Obsolete attribute "annotation" is found in ' + err1 + ' tracks, use shared metadata instead.<br>See ' + FT2noteurl.md});
+        }
+        if (err2) {
+            alertbox_addmsg({text: 'Obsolete attribute "custom_annotation" is found in ' + err2 + ' tracks, use "metadata" attribute instead.<br>See ' + FT2noteurl.md});
+        }
+    }
+
+    var mdi = getmdidx_internal();
+    if (mdi != -1) this.__hubmdvlookup[literal_imd] = mdi;
+
+    if (md_obj) {
+        // process metadata, load mdv from url
+        // process object first (private md)
+        for (var mdkey in md_obj.vocabulary_set) {
+            var md = md_obj.vocabulary_set[mdkey];
+            if (typeof(md) == 'object') {
+                if (!md.source) {
+                    md.source = sourcehub;
+                }
+                var midx = load_metadata_json(md);
+                this.__hubmdvlookup[mdkey] = midx;
+                delete md_obj.vocabulary_set[mdkey];
+            }
+        }
+        // process url (shared md)
+        for (var mdkey in md_obj.vocabulary_set) {
+            var mdurl = md_obj.vocabulary_set[mdkey];
+            if (!typeof(mdurl) == 'string') {
+                print2console('expecting url of shared md but got ' + typeof(mdurl), 2);
+                continue;
+            }
+            var miss = true;
+            for (var j = 0; j < gflag.mdlst.length; j++) {
+                var m = gflag.mdlst[j];
+                if (m.sourceurl && m.sourceurl == mdurl) {
+                    this.__hubmdvlookup[mdkey] = j;
+                    miss = false;
+                    delete md_obj.vocabulary_set[mdkey];
+                    break;
+                }
+            }
+            if (miss) {
+                if (mdurl in this.__hubfailedmdvurl) {
+                    // failed, do not load it
+                    delete this.__hubmdvlookup[mdurl];
+                } else {
+                    // load it then
+                    print2console('Loading shared metadata...', 0);
+                    this.__pending_hubjson = json;
+                    this.load_metadata_url(mdurl);
+                    return;
+                }
+            }
+        }
+        if (md_obj.show_terms) {
+            for (var mdkey in md_obj.show_terms) {
+                var mdidx = this.__hubmdvlookup[mdkey];
+                if (mdidx == undefined) {
+                    print2console('Unrecognized show_terms type: ' + mdkey, 2);
+                    continue;
+                }
+                var mdobj = gflag.mdlst[mdidx];
+                var showterm = [];
+                if (Array.isArray(md_obj.show_terms[mdkey])) {
+                    for (var j = 0; j < md_obj.show_terms[mdkey].length; j++) {
+                        var term = md_obj.show_terms[mdkey][j];
+                        if (term in mdobj.c2p || term in mdobj.p2c) {
+                            showterm.push(term);
+                        } else {
+                            print2console('Unrecognized ' + mdkey + ' term: ' + term, 2);
+                        }
+                    }
+                } else {
+                    var term = md_obj.show_terms[mdkey];
+                    if (term in mdobj.c2p || term in mdobj.p2c) {
+                        showterm.push(term);
+                    } else {
+                        print2console('Unrecognized ' + mdkey + ' term: ' + term, 2);
+                    }
+                }
+                if (showterm.length > 0) {
+                    // check if the term has already been shown
+                    for (var k = 0; k < showterm.length; k++) {
+                        var st = showterm[k];
+                        var shown = false;
+                        for (var i = 0; i < this.mcm.lst.length; i++) {
+                            var t = this.mcm.lst[i];
+                            if (t[0] == st && t[1] == mdidx) {
+                                shown = true;
+                                break;
+                            }
+                        }
+                        if (!shown) {
+                            this.mcm.lst.push([st, mdidx]);
+                        }
+                    }
+                }
+            }
+        }
+        if (md_obj.facet_table && this.facet) {
+            var k1 = md_obj.facet_table[0];
+            if (k1) {
+                var id1 = this.__hubmdvlookup[k1];
+                if (id1 == undefined) {
+                    print2console('Unknown key for facet table: ' + k1, 2);
+                } else {
+                    this.facet.dim1.mdidx = id1;
+                    for (var n in gflag.mdlst[id1].root) {
+                        this.facet.dim1.term = n;
+                        break;
+                    }
+                }
+            }
+            var k2 = md_obj.facet_table[1];
+            if (k2) {
+                var id2 = this.__hubmdvlookup[k2];
+                if (id2 == undefined) {
+                    print2console('Unknown key for facet table: ' + k2, 2);
+                } else {
+                    this.facet.dim2.mdidx = id2;
+                    for (var n in gflag.mdlst[id2].root) {
+                        this.facet.dim2.term = n;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    var gslst = []; // adding gene set not handled in ibp
+
+    /* find category set
+     */
+    var category_set = null,
+        err_tkcat1 = 0,
+        err_tkcat2 = 0;
+    for (var i = 0; i < json.length; i++) {
+        var obj = json[i];
+        if (!obj.type) continue;
+        if (obj.type == 'category_set') {
+            if (!obj.set) {
+                print2console('set is missing from category_set', 2);
+            } else {
+                category_set = obj.set;
+            }
+            json.splice(i, 1);
+            break;
+        }
+    } //parses 4 times
+
+
+    /* go over list again to process all stuff
+     all custom tracks go into ghm (where=1), natives go under it (where=2)
+     */
+    for (var i = 0; i < json.length; i++) {
+        var obj = json[i];
+        var tag = obj.type;
+        if (hubtagistrack(tag)) {
+            var tk = this.parse_custom_track(obj);
+            if (!tk) {
+                continue;
+            }
+            if (tk.category_set_index != undefined) {
+                if (!category_set) {
+                    err_tkcat1++;
+                } else {
+                    if (tk.category_set_index in category_set) {
+                        tk.cateInfo = {};
+                        cateInfo_copy(category_set[tk.category_set_index], tk.cateInfo);
+                        delete tk.category_set_index;
+                    } else {
+                        err_tkcat2++;
+                    }
+                }
+            }
+            if (tk.ft == FT_cm_c) {
+                // compound
+                if (tk.mode == M_hide) {
+                    this.genome.registerCustomtrack(tk);
+                    for (var tn in tk.cm.set) {
+                        var mt = tk.cm.set[tn];
+                        this.genome.registerCustomtrack(mt);
+                        tk.cm.set[tn] = mt.name;
+                    }
+                } else {
+                    ibp.cmtk.push(tk);
+                    ibp.track_order.push({name: tk.name, where: 1});
+                    for (var tn in tk.cm.set) {
+                        var mt = tk.cm.set[tn];
+                        ibp.tklst.push(mt);
+                        tk.cm.set[tn] = mt.name;
+                    }
+                }
+            } else if (tk.ft == FT_matplot) {
+                // compound
+                var namelst = [];
+                if (tk.mode == M_hide) {
+                    for (var j = 0; j < tk.tracks.length; j++) {
+                        var mt = tk.tracks[j];
+                        this.genome.registerCustomtrack(mt);
+                        namelst.push(mt.name);
+                    }
+                } else {
+                    ibp.matplot.push(tk);
+                    ibp.track_order.push({name: tk.name, where: 1});
+                    for (var j = 0; j < tk.tracks.length; j++) {
+                        var mt = tk.tracks[j];
+                        mt.mode = tkdefaultMode(mt);
+                        if (mt.mode != M_show) {
+                            mt.mode = M_den;
+                        }
+                        ibp.tklst.push(mt);
+                        namelst.push(mt.name);
+                    }
+                }
+                tk.tracks = namelst;
+                if (tk.mode == M_hide) {
+                    this.genome.registerCustomtrack(tk);
+                }
+            } else {
+                // all the other types
+                if (tk.mode == M_hide) {
+                    this.genome.registerCustomtrack(tk);
+                } else {
+                    ibp.tklst.push(tk);
+                    ibp.track_order.push({name: tk.name, where: 1});
+                }
+            }
+            if (tk.ft == FT_weaver_c && tk.tracks) {
+                // pending cotton tracks
+                if (!Array.isArray(tk.tracks)) {
+                    print2console(FT2verbal[FT_weaver_c] + ' .tracks must be an array', 2);
+                } else {
+                    // cottonbbj has not been made, put into pending
+                    if (!this.weaverpending) {
+                        this.weaverpending = {};
+                    }
+                    this.weaverpending[tk.cotton] = tk.tracks;
+                }
+                delete tk.tracks;
+            }
+
+        } else if (tag == 'geneset') {
+            if (!obj.list || obj.list.length == 0) {
+                print2console('The gene set has no content', 2);
+                continue;
+            }
+            if (!obj.name) {
+                obj.name = 'A gene set from datahub';
+            }
+            gslst.push(obj);
+        } else if (tag == 'geneset_ripe') {
+            if (!obj.list) {
+                print2console('list missing from geneset_ripe', 2);
+            } else {
+                ibp.geneset_ripe = obj.list;
+            }
+        } else if (tag == 'native_metadata_terms') {
+            alertbox_addmsg({text: 'Use of obsolete attribute "native_metadata_terms" in datahub (see ' + FT2noteurl.md + ')'});
+        } else if (tag == 'native_track') {
+            // validate native tracks here and put to .tklst
+            if (!obj.list) {
+                print2console('Missing list in native_track', 2);
+            } else {
+                // guard against duplicates
+                for (var j = 0; j < obj.list.length; j++) {
+                    var t = this.genome.parse_native_track(obj.list[j]);
+                    if (t) {
+                        ibp.tklst.push(t);
+                        ibp.track_order.push({name: t.name, where: 2});
+                    }
+                }
+            }
+        } else if (tag == 'newbrowser') {
+            ibp.newbrowserlst = obj.list;
+        } else if (tag == 'coordinate_override') {
+            ibp.coord_rawstring = obj.coord;
+        } else if (tag == 'coordinate_notes') {
+            if (!obj.list) {
+                print2console('list missing in coordinate notes', 2);
+            } else {
+                ibp.coord_notes = obj.list;
+            }
+        } else if (tag == 'run_genesetview') {
+            if (!obj.list) {
+                print2console('list missing in genesetview', 2);
+            } else {
+                ibp.gsvparam = obj;
+            }
+        } else if (tag == 'splinters') {
+            if (!obj.list) {
+                print2console('list missing in splinters', 2);
+            } else {
+                ibp.splinters = obj.list;
+            }
+        } else if (tag == 'customized_color') {
+            if (!obj.list) {
+                print2console('list missing in ' + tag, 2);
+            } else {
+                for (var x = 0; x < obj.list.length; x++) {
+                    var _c = obj.list[x];
+                    colorCentral.longlst[_c[0]] = _c[1];
+                }
+            }
+        } else if (tag == 'group_yscale_fixed') {
+            if (!obj.groups) {
+                print2console('groups missing in ' + tag, 2);
+            } else {
+                for (var gid in obj.groups) {
+                    var a = obj.groups[gid];
+                    if (a.min == undefined) {
+                        print2console('min is undefined in group ' + gid, 2);
+                    } else if (a.max == undefined) {
+                        print2console('max is undefined in group ' + gid, 2);
+                    } else {
+                        this.tkgroup[gid] = {
+                            scale: scale_fix,
+                            min: a.min,
+                            min_show: a.min,
+                            max: a.max,
+                            max_show: a.max
+                        };
+                    }
+                }
+            }
+        } else if (tag == 'metadata') {
+        } else {
+            print2console('Unknown type in datahub: ' + tag, 2);
+        }
+    } //parses 5 times
+
+    if (err_tkcat1) {
+        var m = err_tkcat1 + ' tracks are requiring category_set which is missing from the hub';
+        print2console(m, 2);
+        alertbox_addmsg({text: m});
+    }
+    if (err_tkcat2) {
+        var m = err_tkcat2 + ' tracks are using wrong category_set_index';
+        print2console(m, 2);
+        alertbox_addmsg({text: m});
+    }
+
+    if (gslst.length > 0) {
+        if (!apps.gsm) {
+            print2console('Error: gene set management module is not loaded', 2);
+        } else {
+            this.genome.geneset.__pendinggs = this.genome.geneset.__pendinggs.concat(gslst);
+            this.genome.addgeneset_recursive();
+        }
+    }
+
+// juxtaposition
+// do not concern about the case when multiple tracks are tagged with juxtapose
+    for (var i = 0; i < ibp.tklst.length; i++) {
+        var t = ibp.tklst[i];
+        if (t.juxtapose == undefined) continue;
+        if (t.issnp) continue;
+        if (t.ft == FT_bed_n || t.ft == FT_anno_n) {
+            ibp.juxtapose_rawstring = t.name;
+            if (ibp.juxtaposecustom) {
+                delete ibp.juxtaposecustom;
+            }
+        } else if (t.ft == FT_bed_c || t.ft == FT_anno_c) {
+            ibp.juxtapose_rawstring = t.url;
+            ibp.juxtaposecustom = true;
+        } else {
+            print2console('Juxtaposition can only be applied to bed or annotation tracks', 2);
+        }
+        delete t.juxtapose;
+    } //parses 6 times
+
+    if (this.__golden_loadhubcb) {
+        // to prevent default processing of tracks
+        this.__golden_loadhubcb();
+    } else {
+        this.ajax_loadbbjdata(ibp);
+    }
+};
