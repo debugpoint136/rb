@@ -1,0 +1,24 @@
+Browser.prototype.displayedRegionParam
+Browser.prototype.displayedRegionParamMove
+Browser.prototype.displayedRegionParamPrecise
+Browser.prototype.displayedRegionParam_narrow
+Browser.prototype.getDspStat
+Browser.prototype.atLeftBorder
+Browser.prototype.atRightBorder
+Browser.prototype.jsonDsp
+Browser.prototype.updateDspBoundary
+Browser.prototype.updateEntire
+function menuJuxtapose
+Browser.prototype.gsv_turnoff
+function menuTurnoffJuxtapose
+Browser.prototype.turnoffJuxtapose
+Browser.prototype.updateDspstat
+Browser.prototype.runmode_set2default
+Browser.prototype.runmode_param
+function browser_ruler_mover
+Browser.prototype.tellsgap
+function menu_bbjconfig_show
+function menu_changehmspan
+function menu_hmspan_set
+Browser.prototype.sethmspan_refresh
+function menu_changeleftwidth

@@ -1,0 +1,15 @@
+function custtk_shortcut
+function facet2custtklst
+function menu_custtk_showall
+function custtk_useexample
+function custtkpanel_show
+function custtkpanel_back2control
+Genome.prototype.registerCustomtrack
+Genome.prototype.newcustomtrackname
+Genome.prototype.tkurlInUse
+function submitCustomtrack
+Browser.prototype.submitCustomtrack_cb
+function newCustomTrack_isInvalid
+Genome.prototype.custtk_makeui
+function tkentryclick_simple
+Browser.prototype.tkCount

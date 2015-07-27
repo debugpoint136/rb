@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: printSamread.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: printSamread.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * ===BASE===// predsp // printSamread.js
+ * @param 
+ */
+
+function printSamread(table, info, refseq) {
+    var tr = table.insertRow(-1);
+    var td = tr.insertCell(0);
+    td.colSpan = 2;
+    var alignlen = 0; // aligned length
+    if (info.cigar) {
+        for (var i = 0; i &lt; info.cigar.length; i++) {
+            var c = info.cigar[i];
+            if (c[0] == 'M') alignlen += c[1];
+        }
+    }
+    td.innerHTML = ((((info.flag >> 4) &amp; 1) == 1) ? 'Reverse' : 'Forward') + ', ' +
+    (alignlen == info.seq.length ? alignlen + ' bp' : 'read length: ' + info.seq.length + ' bp, ' + alignlen + ' bp aligned');
+    if (info.cigar) {
+        tr = table.insertRow(-1);
+        td = tr.insertCell(0);
+        td.style.opacity = .5;
+        td.innerHTML = 'cigar';
+        td = tr.insertCell(1);
+        td.innerHTML = cigar2str(info.cigar);
+    }
+    tr = table.insertRow(-1);
+    td = tr.insertCell(0);
+    td.style.opacity = .5;
+    td.innerHTML = 'aln. start';
+    td = tr.insertCell(1);
+    td.innerHTML = info.start;
+    tr = table.insertRow(-1);
+    td = tr.insertCell(0);
+    td.style.opacity = .5;
+    td.innerHTML = 'aln. stop';
+    td = tr.insertCell(1);
+    td.innerHTML = info.stop;
+
+    tr = table.insertRow(-1);
+    td = tr.insertCell(0);
+    td.style.opacity = .5;
+    td.innerHTML = 'reference';
+    var std = tr.insertCell(1);
+    std.style.font = '15px Courier,monospace';
+    tr = table.insertRow(-1);
+    td = tr.insertCell(0);
+    td.style.opacity = .5;
+    td.innerHTML = 'read';
+    td.style.paddingBottom = 10;
+    var rtd = tr.insertCell(1);
+    rtd.style.font = '15px Courier,monospace';
+    rtd.style.paddingBottom = 10;
+    var readseq = info.seq; // make copy
+// insertion/deletion
+    if (info.cigar.length > 0) {
+        var i = 0;
+        for (var j = 0; j &lt; info.cigar.length; j++) {
+            var op = info.cigar[j][0];
+            var cl = info.cigar[j][1];
+            if (op == 'I') {
+                var tmp = [refseq.substr(0, i)];
+                for (var k = 0; k &lt; cl; k++) tmp.push('*');
+                refseq = tmp.join('') + refseq.substr(i);
+            } else if (op == 'D') {
+                var tmp = [readseq.substr(0, i)];
+                for (var k = 0; k &lt; cl; k++) tmp.push('*');
+                readseq = tmp.join('') + readseq.substr(i);
+            }
+            i += cl;
+        }
+    }
+    var readbp = [];
+    for (var i = 0; i &lt; readseq.length; i++) {
+        var a = null;
+        if (i &lt; refseq.length) a = refseq[i];
+        var b = readseq[i];
+        var rbp = dom_addtext(rtd, b);
+        readbp.push(rbp);
+        if (a) {
+            dom_addtext(std, a);
+            if (b != '*' &amp;&amp; a != '*') {
+                if (a.toLowerCase() != b.toLowerCase()) {
+                    rbp.style.backgroundColor = 'rgba(255,255,0,0.4)';
+                }
+            }
+        }
+    }
+// clippings
+    if (info.cigar.length > 0) {
+        var c = info.cigar[0];
+        if (c[0] == 'S') {
+            for (i = 0; i &lt; c[1]; i++) {
+                readbp[i].style.backgroundColor = colorCentral.background_faint_3;
+            }
+        }
+        c = info.cigar[info.cigar.length - 1];
+        if (c[0] == 'S') {
+            for (i = 0; i &lt; c[1]; i++) {
+                readbp[readbp.length - 1 - i].style.backgroundColor = colorCentral.background_faint_3;
+            }
+        }
+    }
+}
+
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#bubbleHide">bubbleHide</a></li><li><a href="global.html#bubbleMout">bubbleMout</a></li><li><a href="global.html#bubbleMover">bubbleMover</a></li><li><a href="global.html#bubbleShow">bubbleShow</a></li><li><a href="global.html#cigar2str">cigar2str</a></li><li><a href="global.html#dye_seq">dye_seq</a></li><li><a href="global.html#findDecoritem_longrange_arc">findDecoritem_longrange_arc</a></li><li><a href="global.html#findDecoritem_longrange_trihm">findDecoritem_longrange_trihm</a></li><li><a href="global.html#printSamread">printSamread</a></li><li><a href="global.html#samread_seqregion">samread_seqregion</a></li><li><a href="global.html#sort_struct">sort_struct</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Mon Jul 27 2015 17:37:24 GMT-0500 (CDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

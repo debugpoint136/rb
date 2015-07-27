@@ -1,0 +1,14 @@
+Browser.prototype.pixelwidth2bp
+Browser.prototype.bp2sw
+Browser.prototype.cumoffset
+Browser.prototype.sx2rcoord
+Browser.prototype.drawTrack_header
+Browser.prototype.drawTrack_browser
+Browser.prototype.drawTrack_altregiondecor
+Browser.prototype.stack_track
+function setBamreadcoord
+Browser.prototype.region2showpos
+Browser.prototype.drawRuler_browser
+Browser.prototype.synctkh_padding
+function menu_update_track
+Browser.prototype.updateTrack

@@ -1,0 +1,24 @@
+Browser.prototype.ajax_scfdruntimesync
+Browser.prototype.scfdruntimesync
+function toggle6
+function toggle25
+Genome.prototype.addnewscaffold
+Genome.prototype.scfdoverview_makepanel
+function scfd_toadd_entryclick
+function scfdoverview_Hmove
+function scfdoverview_zoomin_Md
+function scfdoverview_zoomin_Mm
+function scfdoverview_zoomin_Mu
+function scfd_invokeconfigure
+function scfd_cancelconfigure
+Genome.prototype.scfd_cancelconfigure
+function scfd_movebutt_md
+function scfd_movebutt_mm
+function scfd_movebutt_mu
+function scfd_hidebutt_click
+function scfd_updateconfigure
+function lnkgrp_seq_mo
+function lnkgrp_seq_click
+function lnkgrp_div_md
+function lnkgrp_div_mm
+function lnkgrp_div_mu

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: mdCheckboxchange.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: mdCheckboxchange.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * on changing a checkbox in metadata selector panel
+ * need to tell which genome this checkbox belongs to
+ * and which browser to place the effect
+ *
+ * beware: adding new term during editing annotation of a track
+ * new custom term's checkbox will be simulated with click
+ * new term shall be displayed in mcm, but it will not be used to annotate tk
+ * as only tk attr can be used for annotation
+ *
+ * @param event
+ */
+
+function mdCheckboxchange(event) {
+    /* on changing a checkbox in metadata selector panel
+     need to tell which genome this checkbox belongs to
+     and which browser to place the effect
+
+     beware: adding new term during editing annotation of a track
+     new custom term's checkbox will be simulated with click
+     new term shall be displayed in mcm, but it will not be used to annotate tk
+     as only tk attr can be used for annotation
+     TODO
+     */
+    var term = event.target.term;
+    var bbj = gflag.menu.bbj;
+    var mdidx = event.target.mdidx;
+    switch (bbj.genome.mdselect.which) {
+        case 1:
+            // add to mcm in bbj panel
+            bbj.showhide_term_in_mcm([term, mdidx], event.target.checked);
+            return;
+        case 3:
+            // editing custom track anno after submission
+            // not in use
+            if (event.target.checked) {
+                /* adding annotation
+                 to both registry/display objects
+                 to insert &lt;tr> in table to be used in annotation
+                 term must be leaf, and could be native or custom
+                 need to imprint both term and parent info on the &lt;tr>
+                 */
+                document.getElementById('custtkmdanno_editsaysno').style.display = 'none';
+                var showtable = document.getElementById('custtkmdanno_showholder');
+                showtable.style.display = 'table';
+                // TODO
+                bbj.genome.custmd_tableinsert(showtable, term, iscustom, custtkmdannoedit_removeTerm);
+                var ft = gflag.ctmae.ft;
+                var tkname = gflag.ctmae.tkname;
+                // 1: registry object
+                var obj = gflag.ctmae.bbj.genome.hmtk[tkname];
+                if (!obj.md[mdidx]) {
+                    obj.md[mdidx] = {};
+                }
+                obj.md[mdidx][term] = 1;
+                // 2: display object
+                obj = gflag.ctmae.bbj.findTrack(tkname);
+                if (obj != null) {
+                    if (!obj.md[mdidx]) {
+                        obj.md[mdidx] = {};
+                    }
+                    obj.md[mdidx][term] = 1;
+                    gflag.ctmae.bbj.prepareMcm();
+                    gflag.ctmae.bbj.drawMcm();
+                }
+            } else {
+                custtkmdannoedit_removeTerm(term);
+            }
+            return;
+        case 4:
+            compass_customhub_assignterm(term);
+            return;
+        default:
+            fatalError('mdCheckboxchange: unknown bbj.genome.mdselect.which');
+    }
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#button_mcm_invokemds">button_mcm_invokemds</a></li><li><a href="global.html#getmdidx_internal">getmdidx_internal</a></li><li><a href="global.html#load_metadata_json">load_metadata_json</a></li><li><a href="global.html#make_mdtree_recursive">make_mdtree_recursive</a></li><li><a href="global.html#mcmheader_mover">mcmheader_mover</a></li><li><a href="global.html#md_findterm">md_findterm</a></li><li><a href="global.html#mdCheckboxchange">mdCheckboxchange</a></li><li><a href="global.html#mdshowhide">mdshowhide</a></li><li><a href="global.html#mdt_box_click">mdt_box_click</a></li><li><a href="global.html#mdterm_print">mdterm_print</a></li><li><a href="global.html#mdtermsearch">mdtermsearch</a></li><li><a href="global.html#mdtermsearch_ku">mdtermsearch_ku</a></li><li><a href="global.html#mdtermsearch_show">mdtermsearch_show</a></li><li><a href="global.html#menu_mcm_invokemds">menu_mcm_invokemds</a></li><li><a href="global.html#parse_metadata_recursive">parse_metadata_recursive</a></li><li><a href="global.html#parse_nativemd">parse_nativemd</a></li><li><a href="global.html#words2mdterm">words2mdterm</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Mon Jul 27 2015 17:31:23 GMT-0500 (CDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

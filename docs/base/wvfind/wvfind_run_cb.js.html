@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: wvfind_run_cb.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: wvfind_run_cb.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * ===BASE===// wvfind // wvfind_run_cb.js
+ * @param __Browser.prototype__
+ * @param 
+ */
+
+Browser.prototype.wvfind_run_cb = function (data, rlst, wtks, callback) {
+// data is returned by cgi
+    if (!data || !data.tkdatalst || data.tkdatalst.length == 0) {
+        print2console('Server error!', 2);
+        callback();
+        return;
+    }
+    var bb = new Browser();
+    var btk = {weaver: {}};
+    var targetmaxlen = 0;
+    for (var i = 0; i &lt; rlst.length; i++) {
+        targetmaxlen = Math.max(targetmaxlen, rlst[i].stop - rlst[i].start);
+    }
+    var geneIter = {}; // iteration object to retrieve query gene info over stitches
+    var maxstitch = 0; // to give to callback
+    for (var i = 0; i &lt; data.tkdatalst.length; i++) {
+        var wtk = data.tkdatalst[i];
+        if (wtk.ft != FT_weaver_c) {
+            print2console('ft is not weaver', 2);
+            continue;
+        }
+        var t = null;
+        for (var j = 0; j &lt; wtks.length; j++) {
+            if (wtks[j].name == wtk.name) {
+                t = wtks[j];
+                break;
+            }
+        }
+        if (!t) {
+            fatalError('wtk is gone');
+        }
+        if (wtk.data.length != rlst.length) {
+            print2console('Error: inconsistant returned data for ' + t.cotton, 2);
+            continue;
+        }
+        // find default gene track from query genome
+        var qgtk = null;
+        for (var n in genome[t.cotton].decorInfo) {
+            var g = genome[t.cotton].decorInfo[n];
+            if (g.isgene) {
+                qgtk = g;
+                break;
+            }
+        }
+        for (var j = 0; j &lt; wtk.data.length; j++) {
+            var targetr = rlst[j];
+            var len = (targetr.stop - targetr.start);
+            bb.dspBoundary = {
+                vstartr: 0, vstarts: 0, vstartc: targetr.start,
+                vstopr: 0, vstops: len, vstopc: targetr.stop
+            };
+            bb.regionLst = [[targetr.chr, 0, this.genome.scaffold.len[targetr.chr], targetr.start, targetr.stop, len, '', 1]];
+            bb.entire = {length: len, spnum: len, summarySize: 1, atbplevel: false};
+            btk.data = [[]];
+            for (var k = 0; k &lt; wtk.data[j].length; k++) {
+                var e = wtk.data[j][k]; // target coord
+                var g = e.genomealign; // query coord
+                btk.data[0].push({
+                    start: e.start, stop: e.stop, id: j,
+                    hsp: {
+                        querychr: g.chr,
+                        querystart: g.start,
+                        querystop: g.stop,
+                        strand: g.strand,
+                        targetrid: 0,
+                        targetstart: e.start,
+                        targetstop: e.stop
+                    }
+                });
+            }
+            bb.weaver_stitch(btk, Math.min(len * 5, targetmaxlen * 1.5));
+            if (!btk.weaver.stitch || btk.weaver.stitch.length == 0) {
+                continue;
+            }
+            btk.weaver.stitch.sort(wvfind_sorthit);
+            targetr.hit[t.cotton] = btk.weaver.stitch;
+            for (var k = 0; k &lt; btk.weaver.stitch.length; k++) {
+                var s = btk.weaver.stitch[k];
+                var total = 0;
+                for (var m = 0; m &lt; s.lst.length; m++) {
+                    total += s.lst[m].targetstop - s.lst[m].targetstart;
+                }
+                maxstitch = Math.max(maxstitch, total);
+                s.percentage = Math.min(100, Math.ceil(100 * total / (targetr.stop - targetr.start)));
+            }
+            if (targetr.isgene) {
+                if (!geneIter[t.cotton]) {
+                    geneIter[t.cotton] = {};
+                }
+                var thisqgtk = null;
+                if (targetr.genetrack in genome[t.cotton].decorInfo) {
+                    thisqgtk = genome[t.cotton].decorInfo[targetr.genetrack];
+                } else {
+                    thisqgtk = qgtk;
+                }
+                if (thisqgtk) {
+                    if (!geneIter[t.cotton][thisqgtk.name]) {
+                        geneIter[t.cotton][thisqgtk.name] = [];
+                    }
+                    geneIter[t.cotton][thisqgtk.name].push(j);
+                } else {
+                    print2console('gene track missing from ' + t.cotton, 2);
+                }
+            }
+        }
+    }
+    this.wvfind_itergene(geneIter, rlst, callback);
+};
+
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#draw_stitch">draw_stitch</a></li><li><a href="global.html#makepanel_wvfind">makepanel_wvfind</a></li><li><a href="global.html#menu_gs2wvfind">menu_gs2wvfind</a></li><li><a href="global.html#toggle31_1">toggle31_1</a></li><li><a href="global.html#toggle31_2">toggle31_2</a></li><li><a href="global.html#wvfind_2golden">wvfind_2golden</a></li><li><a href="global.html#wvfind_2golden_cb">wvfind_2golden_cb</a></li><li><a href="global.html#wvfind_addtk_sukn">wvfind_addtk_sukn</a></li><li><a href="global.html#wvfind_app_cb">wvfind_app_cb</a></li><li><a href="global.html#wvfind_apprun">wvfind_apprun</a></li><li><a href="global.html#wvfind_choosegeneset">wvfind_choosegeneset</a></li><li><a href="global.html#wvfind_choosetk">wvfind_choosetk</a></li><li><a href="global.html#wvfind_choosetk_closure">wvfind_choosetk_closure</a></li><li><a href="global.html#wvfind_export">wvfind_export</a></li><li><a href="global.html#wvfind_gs2lst">wvfind_gs2lst</a></li><li><a href="global.html#wvfind_gs_chosen">wvfind_gs_chosen</a></li><li><a href="global.html#wvfind_showgeneset">wvfind_showgeneset</a></li><li><a href="global.html#wvfind_showresult">wvfind_showresult</a></li><li><a href="global.html#wvfind_sorthit">wvfind_sorthit</a></li><li><a href="global.html#wvfind_track_genomemenu">wvfind_track_genomemenu</a></li><li><a href="global.html#wvfind_view_toggle">wvfind_view_toggle</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Mon Jul 27 2015 17:55:22 GMT-0500 (CDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

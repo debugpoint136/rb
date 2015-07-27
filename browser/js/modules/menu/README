@@ -1,0 +1,33 @@
+function menu_mover
+function menu_mout
+function menu_appoption
+function menu_addoption
+function menu_shutup
+function menu_show_beneathdom
+function menu_show
+function menu_hide
+function menu_mcm_header
+function fontpanel_set
+function config_cmtk
+function config_numerical
+function config_cat
+function config_density
+function config_ld
+function config_hammock
+function menu_hammock_changescale
+function menu_hammock_setfixscale
+function config_bam
+function config_weaver
+function config_lr
+function config_dispatcher
+function menuConfig
+function menuMcmflip
+Browser.prototype.removeTrack_obj
+function menuRemove
+function menu_overallconfig
+function menu_track_browser
+function menu_showmodebutt
+function menuDecorChangemode
+Browser.prototype.tkchangemode
+function risky_changemode
+function menu_blank

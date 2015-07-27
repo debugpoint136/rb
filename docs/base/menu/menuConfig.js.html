@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: menuConfig.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: menuConfig.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * ===BASE===// menu // menuConfig.js
+ * @param 
+ */
+
+function menuConfig() {
+    menu_shutup();
+    var m = gflag.menu;
+    var bbj = m.bbj;
+    if (m.context == 1) {
+        // single track from main browser panel
+        menu.c53.style.display = 'block';
+        menu.c53.checkbox.checked = false;
+        var tk = m.tklst[0];
+        // bg applies to everyone
+        menu.c44.style.display = 'block';
+        if (tk.qtc.bg) {
+            menu.c44.checkbox.checked = true;
+            menu.c44.color.style.display = 'block';
+            menu.c44.color.style.backgroundColor = tk.qtc.bg;
+        } else {
+            menu.c44.checkbox.checked = false;
+            menu.c44.color.style.display = 'none';
+        }
+        config_dispatcher(tk);
+    } else if (m.context == 2) {
+        /* right click on mcm block for tracks in ghm, confusing as any tracks can be here
+         or multi-selection
+         */
+        menu.c53.checkbox.checked = false;
+        if (m.tklst.length == 1) {
+            m.context = 1;
+            menuConfig();
+        } else {
+            menu.c44.style.display = 'block'; // tk bg
+            menu.c44.checkbox.checked = false;
+            menu.c44.color.style.display = 'none';
+            var ft = {};
+            var den = [];
+            var nft = FT_nottk, count = 0; // most abundant tk
+            // will only show config table of one ft, so need to prioritize
+            for (var i = 0; i &lt; m.tklst.length; i++) {
+                var t = m.tklst[i];
+                if (t.mode == M_den) {
+                    den.push(i);
+                } else {
+                    if (t.ft in ft) {
+                        ft[t.ft].push(i);
+                    } else {
+                        ft[t.ft] = [i];
+                    }
+                    var c = ft[t.ft].length;
+                    if (c > count) {
+                        count = c;
+                        nft = t.ft;
+                    }
+                }
+            }
+            if (den.length > count) {
+                // density mode tk wins
+                config_density(m.tklst[den[0]])
+            } else {
+                if (nft == FT_cat_c || nft == FT_cat_n) {
+                    // but do not show cat config as each tk has its own cateInfo
+                    menu.c14.style.display = menu.c44.style.display = 'block';
+                    menu.c44.checkbox.checked = false;
+                    menu.c44.color.style.display = 'none';
+                } else {
+                    config_dispatcher(m.tklst[ft[nft][0]]);
+                }
+            }
+            menu.c14.unify.style.display = 'table-cell';
+        }
+    } else {
+        fatalError("unknown menu context id");
+    }
+    placePanel(menu, parseInt(menu.style.left), parseInt(menu.style.top));
+}
+
+
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#config_bam">config_bam</a></li><li><a href="global.html#config_cat">config_cat</a></li><li><a href="global.html#config_cmtk">config_cmtk</a></li><li><a href="global.html#config_density">config_density</a></li><li><a href="global.html#config_dispatcher">config_dispatcher</a></li><li><a href="global.html#config_hammock">config_hammock</a></li><li><a href="global.html#config_ld">config_ld</a></li><li><a href="global.html#config_lr">config_lr</a></li><li><a href="global.html#config_numerical">config_numerical</a></li><li><a href="global.html#config_weaver">config_weaver</a></li><li><a href="global.html#fontpanel_set">fontpanel_set</a></li><li><a href="global.html#menu_addoption">menu_addoption</a></li><li><a href="global.html#menu_appoption">menu_appoption</a></li><li><a href="global.html#menu_blank">menu_blank</a></li><li><a href="global.html#menu_hammock_changescale">menu_hammock_changescale</a></li><li><a href="global.html#menu_hammock_setfixscale">menu_hammock_setfixscale</a></li><li><a href="global.html#menu_hide">menu_hide</a></li><li><a href="global.html#menu_mcm_header">menu_mcm_header</a></li><li><a href="global.html#menu_mout">menu_mout</a></li><li><a href="global.html#menu_overallconfig">menu_overallconfig</a></li><li><a href="global.html#menu_show">menu_show</a></li><li><a href="global.html#menu_show_beneathdom">menu_show_beneathdom</a></li><li><a href="global.html#menu_showmodebutt">menu_showmodebutt</a></li><li><a href="global.html#menu_shutup">menu_shutup</a></li><li><a href="global.html#menu_track_browser">menu_track_browser</a></li><li><a href="global.html#menuConfig">menuConfig</a></li><li><a href="global.html#menuDecorChangemode">menuDecorChangemode</a></li><li><a href="global.html#menuMcmflip">menuMcmflip</a></li><li><a href="global.html#menuRemove">menuRemove</a></li><li><a href="global.html#risky_changemode">risky_changemode</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Mon Jul 27 2015 17:31:56 GMT-0500 (CDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

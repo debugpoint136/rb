@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: makeTrackDisplayobj.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: makeTrackDisplayobj.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * ===BASE===// track // makeTrackDisplayobj.js
+ * @param __Browser.prototype__
+ * @param 
+ */
+
+Browser.prototype.makeTrackDisplayobj = function (name, ft) {
+    /* create display object
+     unified for all types
+     registry object must already exist, no matter native or custom
+     make doms for display
+
+     TODO pwc, htest, bev?
+     */
+    var oobj = this.genome.getTkregistryobj(name, ft);
+    if (!oobj) {
+        print2console('Cannot make track, no registry object found for ' + name, 2);
+        return null;
+    }
+// tk obj to be returned
+    var obj = {label: oobj.label};
+
+    /* recover display object from registry object
+     */
+    obj.name = name;
+    obj.ft = ft;
+    if (oobj.group) {
+        obj.group = oobj.group;
+    }
+    obj.md = [];
+    obj.attrlst = [];
+    obj.attrcolor = [];
+    if (oobj.md) {
+        for (var i = 0; i &lt; oobj.md.length; i++) {
+            if (!oobj.md[i]) continue;
+            var s = {};
+            for (var t in oobj.md[i]) {
+                s[t] = 1;
+            }
+            obj.md[i] = s;
+        }
+    }
+    if (oobj.normalize) {
+        var s = {};
+        for (var k in oobj.normalize) {
+            s[k] = oobj.normalize[k];
+        }
+        obj.normalize = s;
+    }
+
+// decide where (ghm or under) this track should appear initially
+    if (ft == FT_matplot) {
+        obj.where = 1;
+    } else if (ft == FT_bam_n || ft == FT_bam_c || ft == FT_sam_n || ft == FT_sam_c) {
+        obj.where = 1;
+    } else if (ft == FT_ld_c || ft == FT_ld_n) {
+        obj.where = 2;
+    } else if ((ft == FT_bed_n || ft == FT_bed_c || ft == FT_lr_n || ft == FT_lr_c || ft == FT_qdecor_n) || (name in this.genome.decorInfo)) {
+        obj.where = 2;
+    } else {
+        obj.where = 1;
+    }
+
+// initial mode, should make into track2Style
+    if (isHmtk(ft) || ft == FT_matplot || ft == FT_cm_c) {
+        obj.mode = M_show;
+    } else if (ft == FT_ld_c || ft == FT_ld_n) {
+        obj.mode = M_trihm;
+    } else {
+        obj.mode = oobj.mode;
+    }
+
+// always-on
+    obj.url = oobj.url;
+    obj.details = oobj.details;
+
+// for weaving
+    if (oobj.cotton) {
+        // cotton passed for custom track
+        obj.cotton = oobj.cotton;
+    } else if (this.weaver &amp;&amp; this.weaver.iscotton) {
+        // won't get cotton from registry object of native track, need to detect by this method
+        obj.cotton = this.genome.name;
+    }
+
+// set internal md
+    var mdi = getmdidx_internal();
+    var a = {};
+    a[FT2verbal[obj.ft]] = 1;
+    if (obj.ft == FT_weaver_c) {
+        a[obj.cotton] = 1;
+    } else {
+        a[this.genome.name] = 1;
+    }
+    obj.md[mdi] = a;
+
+// track canvas
+    var c = document.createElement('canvas');
+    c.height = c.width = 1;
+    c.style.display = 'block';
+    c.tkname = name;
+    c.onmousemove = track_Mmove;
+    c.onmouseout = track_Mout;
+    c.oncontextmenu = menu_track_browser;
+    obj.canvas = c;
+    c.onclick = track_click;
+    if (obj.cotton) c.cotton = obj.cotton;
+
+// mcm canvas (hidden in splinter)
+    c = document.createElement('canvas');
+    c.style.display = "block";
+    c.tkname = name;
+    c.width = c.height = 1;
+    c.onmousedown = mcm_Mdown;
+    c.onmouseover = mcm_Mover;
+    c.onmousemove = mcm_tooltipmove;
+    c.onmouseout = mcm_Mout;
+    c.oncontextmenu = menu_track_mcm;
+    obj.atC = c;
+    if (obj.cotton) c.cotton = obj.cotton;
+
+// header canvas (hidden in splinter)
+    c = document.createElement('canvas');
+    c.style.display = 'block';
+    c.width = c.height = 1;
+    c.tkname = name;
+    c.oncontextmenu = menu_track_browser;
+    c.onmouseover = trackheader_Mover;
+    c.onmouseout = trackheader_Mout;
+    c.onmousedown = trackheader_MD;
+    obj.header = c;
+    if (obj.cotton) c.cotton = obj.cotton;
+
+    /* apply style
+     */
+    obj.qtc = {anglescale: 1};
+    tk_applydefaultstyle(obj);
+
+    switch (ft) {
+        case FT_ld_n:
+        case FT_ld_c:
+            obj.ld = {hash: {}, ticksize: 5, topheight: 100};
+            break;
+        case FT_weaver_c:
+            obj.weaver = {};
+            for (var n in oobj.weaver) {
+                obj.weaver[n] = oobj.weaver[n];
+            }
+            if (oobj.reciprocal) {
+                obj.reciprocal = oobj.reciprocal;
+            }
+            if (!obj.qtc.stackheight) {
+                obj.qtc.stackheight = weavertkstackheight;
+            }
+            break;
+        case FT_matplot:
+            if (!oobj.tracks) fatalError('.tracks missing from matplot registry object: ' + name);
+            obj.tracks = [];
+            /* registry obj .tracks are only names
+             when adding matplot by loading member tk anew, will only use name
+             if making matplot from menu by combining existing member tk,
+             must replace name with display obj of member tk
+             */
+            for (var i = 0; i &lt; oobj.tracks.length; i++) {
+                var _o = this.findTrack(oobj.tracks[i]);
+                if (_o) {
+                    obj.tracks.push(_o);
+                } else {
+                    obj.tracks.push(oobj.tracks[i]);
+                }
+            }
+            obj.qtc.height = Math.min(150, 30 * obj.tracks.length);
+            obj.qtc.thtype = scale_auto;
+            break;
+        case FT_cm_c:
+            if (!oobj.cm) fatalError('.cm missing from methylC registry object');
+            var c = oobj.cm;
+            if (!c.color) fatalError('.color missing from methylC registry object');
+            if (!c.bg) fatalError('.bg missing from methylC registry object');
+            var s = {isfirst: true};
+            for (var k in c.set) {
+                s[k] = c.set[k];
+            }
+            obj.cm = {
+                set: s,
+                combine: (c.combine == undefined ? false : c.combine),
+                combine_chg: (c.combine_chg == undefined ? false : c.combine_chg),
+                scale: (c.scale == undefined ? false : c.scale),
+                filter: (c.filter == undefined ? 0 : c.filter),
+                color: c.color, bg: c.bg
+            };
+            break;
+        case FT_catmat:
+            obj.rowheight = oobj.rowheight;
+            obj.rowcount = oobj.rowcount;
+            obj.qtc.height = 1 + obj.rowheight * obj.rowcount;
+            break;
+    }
+
+    /* override default style
+     */
+    if (oobj.qtc) {
+        qtc_paramCopy(oobj.qtc, obj.qtc);
+    }
+
+    if (obj.qtc.defaultmode) {
+        obj.defaultmode = obj.qtc.defaultmode;
+        delete obj.qtc.defaultmode;
+    }
+
+    if (oobj.cateInfo) {
+        obj.cateInfo = {};
+        cateInfo_copy(oobj.cateInfo, obj.cateInfo);
+    }
+    if (oobj.public) {
+        obj.public = true;
+    }
+    if (oobj.showscoreidx != undefined) {
+        obj.showscoreidx = oobj.showscoreidx;
+        if (oobj.scorenamelst) {
+            obj.scorenamelst = oobj.scorenamelst;
+        }
+        if (oobj.scorescalelst) {
+            obj.scorescalelst = oobj.scorescalelst;
+        }
+        if (!obj.scorenamelst) fatalError('.scorenamelst missing');
+        if (!obj.scorescalelst || obj.scorescalelst.length == 0) {
+            // this happens for native anno tracks
+            obj.scorescalelst = [];
+            for (var i = 0; i &lt; obj.scorenamelst.length; i++) {
+                obj.scorescalelst.push({type: scale_auto});
+            }
+        }
+    }
+    if (oobj.queryUrl) {
+        obj.queryUrl = oobj.queryUrl;
+    }
+    if (oobj.mastertk) {
+        obj.mastertk = this.findTrack(oobj.mastertk);
+    }
+    if (oobj.issnp) {
+        obj.issnp = true;
+    }
+    if (oobj.dbsearch) {
+        obj.dbsearch = true;
+    }
+    if (oobj.querytrack) {
+        obj.querytrack = oobj.querytrack;
+        obj.querytrack.mode = tkdefaultMode(obj.querytrack);
+    }
+
+    if (oobj.horizontallines) {
+        obj.horizontallines = oobj.horizontallines;
+    }
+    return obj;
+};
+
+
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#duplicateTkobj">duplicateTkobj</a></li><li><a href="global.html#findSnp_ldtk">findSnp_ldtk</a></li><li><a href="global.html#grandaddtracks">grandaddtracks</a></li><li><a href="global.html#menu_multipleselect_cancel">menu_multipleselect_cancel</a></li><li><a href="global.html#mergeStackdecor">mergeStackdecor</a></li><li><a href="global.html#tk_applydefaultstyle">tk_applydefaultstyle</a></li><li><a href="global.html#toggle28">toggle28</a></li><li><a href="global.html#track_click">track_click</a></li><li><a href="global.html#track_Mmove">track_Mmove</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Mon Jul 27 2015 17:51:53 GMT-0500 (CDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

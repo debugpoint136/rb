@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: wvfind_showresult.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: wvfind_showresult.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * ===BASE===// wvfind // wvfind_showresult.js
+ * @param 
+ */
+
+function wvfind_showresult(arg) {
+    if (!arg.queries || !arg.rlst) return;
+    var bbj = arg.bbj;
+    var bbjclb = bbj.regionLst.length > 0;
+    stripChild(arg.table, 0);
+    var tr = arg.table.insertRow(0);
+    var td = tr.insertCell(0);
+    td.align = 'center';
+    td.innerHTML = bbj.genome.name + (bbjclb ? ' &lt;span style="font-size:70%">click to view in browser&lt;/span>' : '');
+    for (var i = 0; i &lt; arg.queries.length; i++) {
+        td = tr.insertCell(-1);
+        td.align = 'center';
+        td.style.color = arg.queries[i][1];
+        td.innerHTML = arg.queries[i][0];
+    }
+    var lst = arg.rlst;
+    var width = 300;
+    var maxtarget = 0;
+    for (var i = 0; i &lt; lst.length; i++) {
+        maxtarget = Math.max(lst[i].stop - lst[i].start, maxtarget);
+    }
+    var sf = 150 / maxtarget;
+    for (var i = 0; i &lt; lst.length; i++) {
+        var e = lst[i];
+        tr = arg.table.insertRow(-1);
+        tr.className = 'clb4';
+        td = tr.insertCell(0);
+        td.vAlign = 'top';
+        td.align = 'right';
+        if (e.isgene) {
+            var s = dom_addtext(td, e.name, weavertkcolor_target, bbjclb ? 'clb' : null);
+            if (bbjclb) {
+                s.onclick = jump2coord_closure(bbj, e.chr, e.start, e.stop);
+            }
+        } else {
+            var s = dom_addtext(td, e.chr + ':' + e.start + '-' + e.stop + ' &lt;span style="font-size:70%">' + bp2neatstr(e.stop - e.start) + '&lt;/span>', weavertkcolor_target, 'clb');
+            if (bbjclb) {
+                s.onclick = jump2coord_closure(bbj, e.chr, e.start, e.stop);
+            }
+        }
+        if (arg.checkbox) {
+            var chb = dom_create('input', td, 'transform:scale(1.5);');
+            chb.type = 'checkbox';
+            e.checkbox = chb;
+        }
+        dom_create('div', td, 'width:' + parseInt(100 * (e.stop - e.start) / maxtarget) + '%;height:2px;background-color:' + weavertkcolor_target);
+        if (e.isgene) {
+            dom_create('div', td, 'font-size:70%;').innerHTML = e.chr + ':' + e.start + '-' + e.stop + ', ' + bp2neatstr(e.stop - e.start);
+        }
+        for (var j = 0; j &lt; arg.queries.length; j++) {
+            td = tr.insertCell(-1);
+            td.vAlign = 'top';
+            td.style.paddingTop = 5;
+            var hits = e.hit[arg.queries[j][0]];
+            if (!hits || hits.length == 0) {
+                td.innerHTML = 'no hit';
+                continue;
+            }
+            var stc = hits[0];
+            if (arg.checkbox) {
+                if (stc.percentage > 40) {
+                    e.checkbox.checked = true;
+                }
+            }
+            var par = {
+                start: e.start, stop: e.stop,
+                targetcolor: weavertkcolor_target,
+                querycolor: arg.queries[j][1],
+                stitch: stc,
+                width: width,
+                holder: td,
+            };
+            if (e.isgene) {
+                par.targetstruct = e.struct;
+                par.strand = e.strand;
+            }
+            draw_stitch(par);
+            var d = dom_create('div', td);
+            if (stc.querygene) {
+                dom_addtext(d,
+                    stc.querygene.name2 ? stc.querygene.name2 : stc.querygene.name,
+                    arg.queries[j][1]);
+                dom_addtext(d, '&amp;nbsp;&amp;nbsp;' + stc.chr + ':' + stc.start + '-' + stc.stop + ', ' + bp2neatstr(stc.stop - stc.start) + ' ' + stc.percentage + '% aligned').style.fontSize = '70%';
+            } else {
+                dom_addtext(d, stc.chr + ':' + stc.start + '-' + stc.stop + ' &lt;span style="font-size:70%">' + bp2neatstr(stc.stop - stc.start) + ' ' + stc.percentage + '% aligned&lt;/span>', arg.queries[j][1]);
+            }
+            if (hits.length > 1) {
+                var d2 = dom_create('table', d, 'display:none;zoom:.8;');
+                for (var k = 1; k &lt; hits.length; k++) {
+                    var ss = hits[k];
+                    var tr2 = d2.insertRow(-1);
+                    tr2.insertCell(0).innerHTML = ss.chr + ':' + ss.start + '-' + ss.stop;
+                    tr2.insertCell(1).innerHTML = bp2neatstr(ss.stop - ss.start);
+                    tr2.insertCell(2).innerHTML = ss.percentage + '%';
+                }
+                dom_addtext(d, '&amp;nbsp;&amp;nbsp;' + (hits.length - 1) + ' more hit' + (hits.length - 1 > 1 ? 's' : ''), null, 'clb').onclick = toggle_prevnode;
+            }
+        }
+    }
+}
+
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#draw_stitch">draw_stitch</a></li><li><a href="global.html#makepanel_wvfind">makepanel_wvfind</a></li><li><a href="global.html#menu_gs2wvfind">menu_gs2wvfind</a></li><li><a href="global.html#toggle31_1">toggle31_1</a></li><li><a href="global.html#toggle31_2">toggle31_2</a></li><li><a href="global.html#wvfind_2golden">wvfind_2golden</a></li><li><a href="global.html#wvfind_2golden_cb">wvfind_2golden_cb</a></li><li><a href="global.html#wvfind_addtk_sukn">wvfind_addtk_sukn</a></li><li><a href="global.html#wvfind_app_cb">wvfind_app_cb</a></li><li><a href="global.html#wvfind_apprun">wvfind_apprun</a></li><li><a href="global.html#wvfind_choosegeneset">wvfind_choosegeneset</a></li><li><a href="global.html#wvfind_choosetk">wvfind_choosetk</a></li><li><a href="global.html#wvfind_choosetk_closure">wvfind_choosetk_closure</a></li><li><a href="global.html#wvfind_export">wvfind_export</a></li><li><a href="global.html#wvfind_gs2lst">wvfind_gs2lst</a></li><li><a href="global.html#wvfind_gs_chosen">wvfind_gs_chosen</a></li><li><a href="global.html#wvfind_showgeneset">wvfind_showgeneset</a></li><li><a href="global.html#wvfind_showresult">wvfind_showresult</a></li><li><a href="global.html#wvfind_sorthit">wvfind_sorthit</a></li><li><a href="global.html#wvfind_track_genomemenu">wvfind_track_genomemenu</a></li><li><a href="global.html#wvfind_view_toggle">wvfind_view_toggle</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Mon Jul 27 2015 17:55:22 GMT-0500 (CDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

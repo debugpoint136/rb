@@ -1,0 +1,6 @@
+function matplot_menucreate
+function matplot_menucancel
+function config_matplot
+function matplot_linecolor_initiate
+function matplot_linecolor
+Browser.prototype.matplot_drawtk

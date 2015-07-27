@@ -1,0 +1,18 @@
+Browser.prototype.loadgenome_initbrowser
+Browser.prototype.loadgenome_gotdata 
+Browser.prototype.ajax_loadbbjdata
+function trackParam
+Browser.prototype.houseParam 
+Browser.prototype.htestParams 
+Browser.prototype.corrParam 
+Browser.prototype.ajaxX
+Browser.prototype.ajaxX_cb 
+function genelist2selectiontable
+Browser.prototype.tkpanelheight 
+Browser.prototype.migratedatafromgenome 
+Browser.prototype.cleanuphtmlholder 
+function browser_table_mover
+Browser.prototype.browser_makeDoms
+Browser.prototype.splinterSynctkorder 
+function add_new_browser
+function smooth_tkdata

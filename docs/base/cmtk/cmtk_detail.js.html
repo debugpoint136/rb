@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: cmtk_detail.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: cmtk_detail.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * ===BASE===// cmtk // cmtk_detail.js
+ * @param 
+ */
+
+function cmtk_detail(tk, A, B) {
+// A: region id, B: spnum
+    if (tk.cm.combine) {
+        var a = tk.cm.data_cg[A][B];
+        var d = tk.cm.data_rd[A][B];
+        var b = NaN, // chg
+            b_rd; // chg rd, asymmetrical, use rd data on original strand!!
+        if (tk.cm.data_chg) {
+            b = tk.cm.data_chg[A][B];
+            if (!isNaN(b)) {
+                if (isNaN(tk.cm.set.chg_f.data[A][B])) {
+                    b_rd = tk.cm.set.rd_r.data[A][B];
+                } else {
+                    b_rd = tk.cm.set.rd_f.data[A][B];
+                }
+            }
+        }
+        var c = NaN, // chh
+            c_rd; // chh rd
+        if (tk.cm.data_chh) {
+            c = tk.cm.data_chh[A][B];
+            if (!isNaN(c)) {
+                if (isNaN(tk.cm.set.chh_f.data[A][B])) {
+                    c_rd = tk.cm.set.rd_r.data[A][B];
+                } else {
+                    c_rd = tk.cm.set.rd_f.data[A][B];
+                }
+            }
+        }
+        return '&lt;div style="color:white;">&lt;table style="margin:5px;color:inherit;">&lt;tr>' +
+            (isNaN(d) ? '&lt;td colspan=2>no reads&lt;/td>' : '&lt;td>Combined read depth&lt;/td>&lt;td>' + parseInt(d) + '&lt;/td>') + '&lt;/tr>&lt;tr>' +
+            (isNaN(a) ? '' : '&lt;td>&lt;div class=squarecell style="display:inline-block;background-color:' + tk.cm.color.cg_f + ';">&lt;/div> CG&lt;/td>&lt;td>' + neat_0t1(a) + '&lt;/td>') +
+            '&lt;/tr>&lt;tr>' +
+                // chg
+            (isNaN(b) ? '' : '&lt;td>&lt;div class=squarecell style="display:inline-block;background-color:' + tk.cm.color.chg_f + ';">&lt;/div> CHG&lt;/td>&lt;td>' + neat_0t1(b) +
+            (tk.cm.combine_chg ? '' : ' &lt;span style="font-size:70%">(strand-specific read depth: ' + parseInt(b_rd) + ')&lt;/span>') +
+            '&lt;/td>') +
+            '&lt;/tr>&lt;tr>' +
+                // chh
+            (isNaN(c) ? '' : '&lt;td>&lt;div class=squarecell style="display:inline-block;background-color:' + tk.cm.color.chh_f + ';">&lt;/div> CHH&lt;/td>&lt;td>' + neat_0t1(c) + ' &lt;span style="font-size:70%">(strand-specific read depth: ' + parseInt(c_rd) + ')&lt;/span>&lt;/td>') +
+            '&lt;/tr>&lt;/table>' +
+            '&lt;/div>';
+    }
+    var s = tk.cm.set;
+    var a1 = s.cg_f.data[A][B],
+        b1 = s.chg_f ? s.chg_f.data[A][B] : NaN,
+        c1 = s.chh_f ? s.chh_f.data[A][B] : NaN,
+        d1 = s.rd_f.data[A][B],
+        a2 = s.cg_r ? s.cg_r.data[A][B] : NaN,
+        b2 = s.chg_r ? s.chg_r.data[A][B] : NaN,
+        c2 = s.chh_r ? s.chh_r.data[A][B] : NaN,
+        d2 = s.rd_r ? s.rd_r.data[A][B] : NaN;
+    return '&lt;div style="color:white;">&lt;table style="margin:5px;color:inherit;">' +
+        '&lt;tr>&lt;td style="font-size:150%">&amp;raquo;&lt;/td>' +
+        (isNaN(d1) ? '&lt;td colspan=2>no reads&lt;/td>' : '&lt;td>Read depth&lt;/td>&lt;td>' + parseInt(d1) + '&lt;/td>') +
+        '&lt;/tr>&lt;tr>&lt;td>&lt;/td>' +
+        (isNaN(a1) ? '' : '&lt;td>&lt;div class=squarecell style="display:inline-block;background-color:' + tk.cm.color.cg_f + ';">&lt;/div> CG&lt;/td>&lt;td>' + neat_0t1(a1) + '&lt;/td>') +
+        '&lt;/tr>&lt;tr>&lt;td>&lt;/td>' +
+        (isNaN(b1) ? '' : '&lt;td>&lt;div class=squarecell style="display:inline-block;background-color:' + tk.cm.color.chg_f + ';">&lt;/div> CHG&lt;/td>&lt;td>' + neat_0t1(b1) + '&lt;/td>') +
+        '&lt;/tr>&lt;tr>&lt;td>&lt;/td>' +
+        (isNaN(c1) ? '' : '&lt;td>&lt;div class=squarecell style="display:inline-block;background-color:' + tk.cm.color.chh_f + ';">&lt;/div> CHH&lt;/td>&lt;td>' + neat_0t1(c1) + '&lt;/td>') +
+        '&lt;/tr>&lt;tr>&lt;td style="font-size:150%;">&amp;laquo;&lt;/td>' +
+        (isNaN(d2) ? '&lt;td colspan=2>no reads&lt;/td>' : '&lt;td>Read depth&lt;/td>&lt;td>' + parseInt(d2) + '&lt;/td>') +
+        '&lt;/tr>&lt;tr>&lt;td>&lt;/td>' +
+        (isNaN(a2) ? '' : '&lt;td>&lt;div class=squarecell style="display:inline-block;background-color:' + tk.cm.color.cg_r + ';">&lt;/div> CG&lt;/td>&lt;td>' + neat_0t1(a2) + '&lt;/td>') +
+        '&lt;/tr>&lt;tr>&lt;td>&lt;/td>' +
+        (isNaN(b2) ? '' : '&lt;td>&lt;div class=squarecell style="display:inline-block;background-color:' + tk.cm.color.chg_r + ';">&lt;/div> CHG&lt;/td>&lt;td>' + neat_0t1(b2) + '&lt;/td>') +
+        '&lt;/tr>&lt;tr>&lt;td>&lt;/td>' +
+        (isNaN(c2) ? '' : '&lt;td>&lt;div class=squarecell style="display:inline-block;background-color:' + tk.cm.color.chh_r + ';">&lt;/div> CHH&lt;/td>&lt;td>' + neat_0t1(c2) + '&lt;/td>') +
+        '&lt;/tr>&lt;/table>' +
+        '&lt;/div>';
+}
+/** __cmtk__ ends */</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#cmtk_combine_change">cmtk_combine_change</a></li><li><a href="global.html#cmtk_combinechg_change">cmtk_combinechg_change</a></li><li><a href="global.html#cmtk_detail">cmtk_detail</a></li><li><a href="global.html#cmtk_filter_change">cmtk_filter_change</a></li><li><a href="global.html#cmtk_filter_kd">cmtk_filter_kd</a></li><li><a href="global.html#cmtk_scale_change">cmtk_scale_change</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Mon Jul 27 2015 17:22:00 GMT-0500 (CDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+function cateInfo_copy
+function cateTk_wreath_config
+function cateCfg_show
+function cateCfg_showcateid
+function cateTkitemcolor_initiate
+function cateTkitemcolor
+function custcate_idnum_change_input
+Genome.prototype.custcate_idnum_change
+function custcate_color_initiate
+function custcate_submitui_setcolor

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: scfd_updateconfigure.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: scfd_updateconfigure.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * ===BASE===// scaffold // scfd_updateconfigure.js
+ * @param 
+ */
+
+function scfd_updateconfigure() {
+    var newlst = [];
+    var bbj = gflag.menu.bbj;
+    var trlst = bbj.genome.scaffold.overview.holder.firstChild.childNodes;
+    for (var i = 0; i &lt; trlst.length; i++) {
+        if (trlst[i].style.backgroundColor == 'transparent')
+            newlst.push(trlst[i].chr);
+    }
+    newlst = newlst.concat(bbj.genome.scaffold.toadd);
+    bbj.genome.scaffold.toadd = [];
+    if (stringLstIsIdentical(newlst, bbj.genome.scaffold.current)) {
+        scfd_cancelconfigure();
+        return;
+    }
+    // now determine dsp
+    var dspParam = '';
+    if (bbj.dspBoundary.vstartr == bbj.dspBoundary.vstopr &amp;&amp; thinginlist(bbj.regionLst[bbj.dspBoundary.vstartr][0], newlst)) {
+        // very well, currently only showing single region and that region is still in use
+        dspParam = '&amp;' + bbj.displayedRegionParam();
+    } else {
+        var preservedRegions = [];
+        var oldlookregion = [];
+        for (i = bbj.dspBoundary.vstartr; i &lt;= bbj.dspBoundary.vstopr; i++)
+            oldlookregion.push(bbj.regionLst[i][0]);
+        for (i = 0; i &lt; newlst.length; i++) {
+            if (thinginlist(newlst[i], oldlookregion))
+                preservedRegions.push(newlst[i]);
+        }
+        var dspSeq = null;
+        if (preservedRegions.length > 0) {
+            dspSeq = preservedRegions[0];
+        } else {
+            dspSeq = newlst[0];
+        }
+        // just use first sequence but need to make sure not to display too long region
+        var totalLength = 0;
+        for (i = 0; i &lt; newlst.length; i++)
+            totalLength += bbj.genome.scaffold.len[newlst[i]];
+        var allowed = parseInt(totalLength / 3);
+        if (allowed &lt;= 80) {
+            print2console("Sorry cannot carry out this operation, please try again by including more scaffold sequences", 2);
+            return;
+        }
+        allowed = allowed > bbj.genome.scaffold.len[dspSeq] ? bbj.genome.scaffold.len[dspSeq] : allowed;
+        dspParam = '&amp;runmode=' + RM_genome + '&amp;startChr=' + dspSeq + '&amp;startCoord=0&amp;stopChr=' + dspSeq + '&amp;stopCoord=' + (allowed > 10000 ? 10000 : allowed);
+    }
+    bbj.genome.scaffold.current = newlst;
+    bbj.genome.scfdoverview_makepanel();
+    scfd_cancelconfigure();
+    // make some new param strings
+    var tmp = [];
+    for (i = 0; i &lt; newlst.length; i++) {
+        tmp.push(newlst[i]);
+        tmp.push(bbj.genome.scaffold.len[newlst[i]]);
+    }
+    bbj.ajaxX('scaffoldUpdate=on&amp;scaffoldNames=' + tmp.join(',') + ',&amp;scaffoldCount=' + newlst.length + dspParam);
+}
+
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#lnkgrp_div_md">lnkgrp_div_md</a></li><li><a href="global.html#lnkgrp_div_mm">lnkgrp_div_mm</a></li><li><a href="global.html#lnkgrp_div_mu">lnkgrp_div_mu</a></li><li><a href="global.html#lnkgrp_seq_click">lnkgrp_seq_click</a></li><li><a href="global.html#lnkgrp_seq_mo">lnkgrp_seq_mo</a></li><li><a href="global.html#scfd_cancelconfigure">scfd_cancelconfigure</a></li><li><a href="global.html#scfd_hidebutt_click">scfd_hidebutt_click</a></li><li><a href="global.html#scfd_invokeconfigure">scfd_invokeconfigure</a></li><li><a href="global.html#scfd_movebutt_md">scfd_movebutt_md</a></li><li><a href="global.html#scfd_movebutt_mm">scfd_movebutt_mm</a></li><li><a href="global.html#scfd_movebutt_mu">scfd_movebutt_mu</a></li><li><a href="global.html#scfd_toadd_entryclick">scfd_toadd_entryclick</a></li><li><a href="global.html#scfd_updateconfigure">scfd_updateconfigure</a></li><li><a href="global.html#scfdoverview_Hmove">scfdoverview_Hmove</a></li><li><a href="global.html#scfdoverview_zoomin_Md">scfdoverview_zoomin_Md</a></li><li><a href="global.html#scfdoverview_zoomin_Mm">scfdoverview_zoomin_Mm</a></li><li><a href="global.html#scfdoverview_zoomin_Mu">scfdoverview_zoomin_Mu</a></li><li><a href="global.html#toggle6">toggle6</a></li><li><a href="global.html#toggle25">toggle25</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Mon Jul 27 2015 17:43:25 GMT-0500 (CDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

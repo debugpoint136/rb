@@ -1,0 +1,20 @@
+function weaver_custtk_example
+Browser.prototype.stitch2hithsp
+Browser.prototype.weaver_gotgap
+Browser.prototype.targetBypassQuerytk
+Browser.prototype.weaver_detail
+Browser.prototype.weaver_stitch
+Browser.prototype.weaver_stitch2cotton
+Browser.prototype.weaver_hsp2cotton
+Browser.prototype.weaver_cotton_dspboundary
+Browser.prototype.weaver_cotton_spin
+Browser.prototype.weavertoggle
+Browser.prototype.weaver_stitch_decor
+function weaver_flip
+function weaver_showgenometk_closure
+function weaver_showgenometk
+function stitchblob_insertright
+function stitchblob_insertleft
+function stitchblob_new
+function weaver_queryjumpui
+Browser.prototype.may_portcoord2target

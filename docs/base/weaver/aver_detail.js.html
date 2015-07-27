@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: aver_detail.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: aver_detail.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * ===BASE===// weaver // aver_detail.js
+ * @param __Browser.prototype__
+ * @param 
+ */
+
+Browser.prototype.weaver_detail = function (x, hitpoint, result, tk, holder) {
+    stripChild(holder, 0);
+    if (tk.weaver.mode == W_rough) {
+        var s = result.stitch;
+        if (!s) return;
+        var d = dom_create('div', holder, 'margin:10px;line-height:1.5;');
+        d.innerHTML =
+            'Entire ' + tk.cotton + ' region:&lt;br>' +
+            s.chr + ':' + s.start + '-' + s.stop + ' (' +
+            bp2neatstr(s.stop - s.start) + ')' +
+            (s.lst.length > 1 ? '&lt;br>Joined by ' + s.lst.length + ' alignments.' : '') +
+            '&lt;div style="opacity:.8;font-size:80%;">Coordinates in the flags are approximate&lt;br>because gaps are not considered.&lt;br>ZOOM IN to view detailed alignment.&lt;/div>';
+        return;
+    }
+    var item = result;
+// determine chew start
+    var a = x - item.hsp.canvasstart;
+    var spsize = this.regionLst[hitpoint.rid][7];
+    var chewstart = item.hsp.chew_start + parseInt(this.entire.atbplevel ? a / this.entire.bpwidth : a * spsize);
+    var chewflank = 10 + Math.min(15, this.entire.atbplevel ? 0 : parseInt(spsize));
+    var targetbp = [], querybp = [], aln = [];
+    var fv = item.hsp.strand == '+';
+    var targetcoord = item.hsp.targetstart,
+        querycoord = fv ? item.hsp.querystart : item.hsp.querystop;
+    for (var i = item.hsp.chew_start; i &lt; Math.max(item.hsp.chew_start, chewstart - chewflank); i++) {
+        if (item.hsp.targetseq[i] != '-') targetcoord++;
+        if (item.hsp.queryseq[i] != '-') querycoord += fv ? 1 : -1;
+    }
+    var chewrealstart = i;
+    var targetstart = targetcoord;
+    var querystart, querystop,
+        tchl = [], qchl = []; // t/q highlight coord
+    if (fv) querystart = querycoord;
+    else querystop = querycoord;
+    for (; i &lt; Math.min(item.hsp.targetseq.length, chewstart + chewflank); i++) {
+        var t = item.hsp.targetseq[i],
+            q = item.hsp.queryseq[i];
+        if (t != '-' &amp;&amp; q != '-' &amp;&amp; (t.toLowerCase() == q.toLowerCase())) {
+            aln.push('|');
+        } else {
+            aln.push('&amp;nbsp;');
+        }
+        // only highlight those in summary point
+        var highlight = this.entire.atbplevel ? (i == chewstart) : (i >= chewstart - spsize / 2 &amp;&amp; i &lt;= chewstart + spsize / 2);
+        targetbp.push(highlight ? '&lt;span style="background-color:rgba(255,255,0,.2);">' + t + '&lt;/span>' : t);
+        querybp.push(highlight ? '&lt;span style="background-color:rgba(255,255,0,.2);">' + q + '&lt;/span>' : q);
+        if (highlight) {
+            tchl.push(targetcoord);
+            qchl.push(querycoord);
+        }
+        if (t != '-') targetcoord++;
+        if (q != '-') querycoord += fv ? 1 : -1;
+    }
+    var chewrealstop = i;
+    if (fv) querystop = querycoord;
+    else querystart = querycoord;
+
+    var table = dom_create('table', holder, 'margin:10px;color:white;');
+// row 1
+    var tr = table.insertRow(0);
+    var td = tr.insertCell(0);
+    td.colSpan = 3;
+    td.style.paddingBottom = 10;
+// target highlight coord
+    var max = min = tchl[0];
+    for (var i = 1; i &lt; tchl.length; i++) {
+        var a = tchl[i];
+        if (a > max) max = a;
+        if (a &lt; min) min = a;
+    }
+    td.innerHTML = this.genome.name + ', ' + this.regionLst[hitpoint.rid][0] + '&amp;nbsp;&amp;nbsp;' +
+    '&lt;span style="background-color:rgba(255,255,0,.2);">' +
+    (max == min ? max : min + '-' + max) + '&lt;/span>';
+// row 2
+    tr = table.insertRow(-1);
+    td = tr.insertCell(0);
+    td.style.opacity = .7;
+    td.innerHTML = targetstart;
+    td = tr.insertCell(1);
+    td.style.font = '15px Courier,monospace';
+    td.innerHTML = targetbp.join('');
+    td = tr.insertCell(2);
+    td.style.opacity = .7;
+    td.innerHTML = targetcoord;
+// row 3
+    tr = table.insertRow(-1);
+    tr.insertCell(0);
+    td = tr.insertCell(1);
+    td.style.font = '15px Courier,monospace';
+    td.innerHTML = aln.join('');
+    tr.insertCell(2);
+// row 4
+    tr = table.insertRow(-1);
+    td = tr.insertCell(0);
+    td.style.opacity = .7;
+    td.innerHTML = fv ? querystart : querystop;
+    td = tr.insertCell(1);
+    td.style.font = '15px Courier,monospace';
+    td.innerHTML = querybp.join('');
+    td = tr.insertCell(2);
+    td.style.opacity = .7;
+    td.innerHTML = fv ? querystop : querystart;
+// row 5
+    tr = table.insertRow(-1);
+    td = tr.insertCell(0);
+    td.colSpan = 3;
+    td.style.paddingTop = 10;
+// target highlight coord
+    var max = min = qchl[0];
+    for (var i = 1; i &lt; qchl.length; i++) {
+        var a = qchl[i];
+        if (a > max) max = a;
+        if (a &lt; min) min = a;
+    }
+    td.innerHTML = tk.cotton + ', ' + item.hsp.querychr + '&amp;nbsp;&amp;nbsp;' +
+    '&lt;span style="background-color:rgba(255,255,0,.2);">' +
+    (max == min ? max : (fv ? min + '-' + max : max + '-' + min)) + '&lt;/span>&amp;nbsp;&amp;nbsp;' +
+    '&lt;span style="opacity:.7;">' + (item.hsp.strand == '+' ? 'forward' : 'reverse') + '&lt;/span>';
+    return [chewrealstart, chewrealstop, table];
+};
+
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#stitchblob_insertleft">stitchblob_insertleft</a></li><li><a href="global.html#stitchblob_insertright">stitchblob_insertright</a></li><li><a href="global.html#stitchblob_new">stitchblob_new</a></li><li><a href="global.html#weaver_custtk_example">weaver_custtk_example</a></li><li><a href="global.html#weaver_flip">weaver_flip</a></li><li><a href="global.html#weaver_queryjumpui">weaver_queryjumpui</a></li><li><a href="global.html#weaver_showgenometk">weaver_showgenometk</a></li><li><a href="global.html#weaver_showgenometk_closure">weaver_showgenometk_closure</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Mon Jul 27 2015 15:57:03 GMT-0500 (CDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+function menu_refreshcache
+Browser.prototype.refreshcache_maketkhandle
+Browser.prototype.refreshcache_clickhandle_closure
+Browser.prototype.refreshcache_clickhandle
+Browser.prototype.refreshcache_done

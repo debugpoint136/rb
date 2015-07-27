@@ -1,0 +1,6 @@
+function menu_coordnote
+function coordnote_showinputpanel
+function coordnote_submit
+Browser.prototype.draw_coordnote
+function coordnote_mover
+function coordnote_delete

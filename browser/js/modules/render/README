@@ -1,0 +1,43 @@
+function catetk_plot_base
+Browser.prototype.init_hmSpan 
+Browser.prototype.applyHmspan2holders 
+Browser.prototype.render_browser 
+Browser.prototype.tklst_yscale 
+Browser.prototype.track_normalize 
+Browser.prototype.tkgroup_setYscale 
+Browser.prototype.drawTrack_browser_all 
+Browser.prototype.drawMcm 
+Browser.prototype.barplot_uniform 
+Browser.prototype.barplot_base 
+Browser.prototype.tkplot_line 
+function printbp_scrollable
+Browser.prototype.seq2ideogram 
+Browser.prototype.drawIdeogram_browser
+Browser.prototype.tkcd_item 
+Browser.prototype.tkcd_box 
+function plotstrandNameaside
+Browser.prototype.drawATCGlegend 
+function make_skewbox_butt
+function make_controlpanel
+function flip_panel
+function page_makeDoms
+function alertbox_addmsg
+function alertbox_click
+function menu_smoothwindow_checkbox
+function menu_smoothwindow_change
+function menu_tkbg_change
+function menu_tkcurveonly_change
+function menu_barplotbg_change
+function menu_hammock_choosescore
+function menu2_show
+function menu2_hide
+function menu2_mover
+function menu2_mout
+function menu2ele_click
+function qtrack_logtransform
+Browser.prototype.get_tkyscale 
+Browser.prototype.set_tkYscale 
+function qtrack_getthreshold
+function qtcpanel_setdisplay
+function qtc_paramCopy
+Browser.prototype.trackHeightChanged 

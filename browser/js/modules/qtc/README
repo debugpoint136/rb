@@ -1,0 +1,18 @@
+function qtc2json
+function qtc_color1_initiator
+function qtc_color2_initiator
+function qtc_color1_1_initiator
+function qtc_color2_1_initiator
+function indicator3cover
+function toggle15
+function menu_tkh_change
+Browser.prototype.tkgrp_heightchange
+function qtc_percentile
+Browser.prototype.tklstfrommenu
+function stc_fontfamily
+function stc_fontsize
+function stc_fontbold
+function stc_longrange_pcolorscore_KU
+function stc_longrange_pfilterscore_KU
+function stc_longrange_ncolorscore_KU
+function stc_longrange_nfilterscore_KU

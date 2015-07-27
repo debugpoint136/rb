@@ -1,0 +1,11 @@
+function svgpanelhide
+function svgpanelshow
+function svgColor
+Browser.prototype.svgadd
+function makesvg_browserpanel_pushbutt
+function svgshowlink
+Browser.prototype.makesvg_specific
+function makesvg_clear
+function get_genome_info
+function show_genome_info
+function add_new_genome

@@ -1,0 +1,12 @@
+function scalebarMout
+function scalebarMover
+Browser.prototype.show_scalebarbeam
+Browser.prototype.scalebararrowStroke
+function scalebarSliderMD
+function scalebarSliderM
+function scalebarSliderMU
+function scalebarArrowMD
+function scalebarArrowM
+function scalebarArrowMU
+Browser.prototype.drawScalebarSlider
+Browser.prototype.scalebarSlider_fill

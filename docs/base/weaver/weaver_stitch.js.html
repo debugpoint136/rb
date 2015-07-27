@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: weaver_stitch.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: weaver_stitch.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * ===BASE===// weaver // weaver_stitch.js
+ * @param __Browser.prototype__
+ * @param 
+ */
+
+Browser.prototype.weaver_stitch = function (tk, stitchlimit) {
+    /* stitch hsp up
+     distance constrain, if hsp are within a short distance of each other, merge into a big one
+     */
+    stitchlimit = stitchlimit ? stitchlimit : 200 * this.entire.summarySize;
+    var tmp = []; // {chr:, lst:[]}
+    for (var rid = this.dspBoundary.vstartr; rid &lt;= this.dspBoundary.vstopr; rid++) {
+        for (var aid = 0; aid &lt; tk.data[rid].length; aid++) {
+            var h0 = tk.data[rid][aid].hsp;
+            /* if hsp crosses view range border, will trim it
+             but should not modify original hsp, make duplicate
+             */
+            var h = {};
+            for (var n in h0) {
+                h[n] = h0[n];
+            }
+            if (rid == this.dspBoundary.vstartr) {
+                if (h.targetstop &lt;= this.dspBoundary.vstartc) continue;
+                if (h.targetstart &lt; this.dspBoundary.vstartc) {
+                    var perc = (this.dspBoundary.vstartc - h.targetstart) / (h.targetstop - h.targetstart);
+                    h.targetstart = this.dspBoundary.vstartc;
+                    if (h.strand == '+') {
+                        h.querystart += parseInt((h.querystop - h.querystart) * perc);
+                    } else {
+                        h.querystop -= parseInt((h.querystop - h.querystart) * perc);
+                    }
+                }
+            }
+            if (rid == this.dspBoundary.vstopr) {
+                if (h.targetstart >= this.dspBoundary.vstopc) continue;
+                if (h.targetstop > this.dspBoundary.vstopc) {
+                    var perc = (h.targetstop - this.dspBoundary.vstopc) / (h.targetstop - h.targetstart);
+                    h.targetstop = this.dspBoundary.vstopc;
+                    if (h.strand == '+') {
+                        h.querystop -= parseInt((h.querystop - h.querystart) * perc);
+                    } else {
+                        h.querystart += parseInt((h.querystop - h.querystart) * perc);
+                    }
+                }
+            }
+            // save
+            h.t1 = this.cumoffset(h.targetrid, Math.max(this.regionLst[h.targetrid][3], h.targetstart));
+            h.t2 = this.cumoffset(h.targetrid, Math.min(this.regionLst[h.targetrid][4], h.targetstop));
+            var nf = true;
+            for (var i = 0; i &lt; tmp.length; i++) {
+                if (tmp[i].chr == h.querychr) {
+                    tmp[i].lst.push(h);
+                    nf = false;
+                    break;
+                }
+            }
+            if (nf) {
+                tmp.push({chr: h.querychr, lst: [h]});
+            }
+        }
+    }
+    var newlst = [];
+    for (var j = 0; j &lt; tmp.length; j++) {
+        tmp[j].lst.sort(hspSort);
+        var fragment = null;
+        for (var i = 0; i &lt; tmp[j].lst.length; i++) {
+            var hsp = tmp[j].lst[i];
+            if (!fragment) {
+                fragment = {
+                    chr: tmp[j].chr,
+                    start: hsp.querystart,
+                    stop: hsp.querystop,
+                    lst: [hsp],
+                    t1: hsp.t1,
+                    t2: hsp.t2,
+                };
+            } else {
+                if (Math.max(fragment.start, hsp.querystart) - Math.min(fragment.stop, hsp.querystop) &lt; stitchlimit) {
+                    // join
+                    fragment.lst.push(hsp);
+                    fragment.start = Math.min(fragment.start, hsp.querystart);
+                    fragment.stop = Math.max(fragment.stop, hsp.querystop);
+                    fragment.t1 = Math.min(hsp.t1, fragment.t1);
+                    fragment.t2 = Math.max(hsp.t2, fragment.t2);
+                } else {
+                    newlst.push(fragment);
+                    fragment = {
+                        chr: tmp[j].chr,
+                        start: hsp.querystart,
+                        stop: hsp.querystop,
+                        lst: [hsp],
+                        t1: hsp.t1,
+                        t2: hsp.t2,
+                    };
+                }
+            }
+        }
+        if (fragment) {
+            newlst.push(fragment);
+        }
+    }
+    tk.weaver.stitch = newlst;
+};
+
+
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#stitchblob_insertleft">stitchblob_insertleft</a></li><li><a href="global.html#stitchblob_insertright">stitchblob_insertright</a></li><li><a href="global.html#stitchblob_new">stitchblob_new</a></li><li><a href="global.html#weaver_custtk_example">weaver_custtk_example</a></li><li><a href="global.html#weaver_flip">weaver_flip</a></li><li><a href="global.html#weaver_queryjumpui">weaver_queryjumpui</a></li><li><a href="global.html#weaver_showgenometk">weaver_showgenometk</a></li><li><a href="global.html#weaver_showgenometk_closure">weaver_showgenometk_closure</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Mon Jul 27 2015 17:54:11 GMT-0500 (CDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

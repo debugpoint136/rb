@@ -1,0 +1,15 @@
+function zoomin_MD
+Browser.prototype.init_zoomin
+function zoomin_M
+function zoomin_MU
+function start_animate_zoom
+function run_animate_zoom
+Browser.prototype.zoom_dom_movable
+function may_drawbrowser_afterzoom
+function browser_zoomin
+function browser_zoomout
+function browser_pan
+Browser.prototype.cgiZoomin
+Browser.prototype.ajaxZoomin
+Browser.prototype.cgiZoomout
+function risky_zoomout

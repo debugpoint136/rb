@@ -1,0 +1,10 @@
+Browser.prototype.splinter_issuetrigger
+Browser.prototype.splinter_recursive
+Browser.prototype.splinter_make
+Browser.prototype.may_init_pending_splinter
+Browser.prototype.splinter_abort
+function splinter_pushbutt
+function splinter_zoomout
+function splinter_zoomin
+function splinter_pan
+Browser.prototype.splinter_delete

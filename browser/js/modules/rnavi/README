@@ -1,0 +1,5 @@
+function toggle30
+function navregion_prev
+function navregion_next
+function navregion_go
+function navregion_use

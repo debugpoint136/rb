@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: drawIdeogramSegment_simple.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: drawIdeogramSegment_simple.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * only draws data within a region
+ * data: getcytoband4region2plot() output
+ * x/y: starting plot position on canvas, must be integer
+ * plotwidth: entire plotting width, only used to draw the blank rectangle
+ * @param data
+ * @param ctx
+ * @param x
+ * @param y
+ * @param plotwidth
+ * @param plotheight
+ * @param tosvg
+ * @return svgdata &lt;br>&lt;br>&lt;br>
+ */
+
+function drawIdeogramSegment_simple(data, ctx, x, y, plotwidth, plotheight, tosvg) {
+    /* only draws data within a region
+     args:
+     data: getcytoband4region2plot() output
+     x/y: starting plot position on canvas, must be integer
+     plotwidth: entire plotting width, only used to draw the blank rectangle
+     */
+    ctx.font = "bold 8pt Sans-serif";
+    var mintextheight = 13;
+    if (typeof(data) == 'string') {
+        // no cytoband data
+        var svgdata = [];
+        ctx.strokeStyle = colorCentral.foreground;
+        ctx.strokeRect(x, y + 0.5, plotwidth, plotheight);
+        if (tosvg) svgdata.push({
+            type: svgt_rect,
+            x: x,
+            y: y + .5,
+            w: plotwidth,
+            h: plotheight,
+            stroke: ctx.strokeStyle
+        });
+        ctx.fillStyle = colorCentral.foreground;
+        var s = data; // is chrom name
+        var w = ctx.measureText(s).width;
+        if (w &lt;= plotwidth &amp;&amp; plotheight >= mintextheight) {
+            var y2 = y + 10 + (plotheight - mintextheight) / 2;
+            ctx.fillText(s, x + (plotwidth - w) / 2, y2);
+            if (tosvg) svgdata.push({type: svgt_text, x: x + (plotwidth - w) / 2, y: y2, text: s, bold: true});
+        }
+        return svgdata;
+    }
+    var svgdata = [];
+    var previousIsCentromere = null;
+    for (var i = 0; i &lt; data.length; i++) {
+        var band = data[i];
+        if (band[2] >= 0) {
+            ctx.fillStyle = 'rgb(' + cytoBandColor[band[2]] + ',' + cytoBandColor[band[2]] + ',' + cytoBandColor[band[2]] + ')';
+            ctx.fillRect(x, y, band[1], plotheight);
+            if (tosvg) svgdata.push({type: svgt_rect, x: x, y: y, w: band[1], h: plotheight, fill: ctx.fillStyle});
+            ctx.strokeStyle = colorCentral.foreground;
+            ctx.beginPath();
+            ctx.moveTo(x, 0.5 + y);
+            ctx.lineTo(x + band[1], 0.5 + y);
+            ctx.moveTo(x, plotheight - 0.5 + y);
+            ctx.lineTo(x + band[1], plotheight - 0.5 + y);
+            ctx.stroke();
+            if (tosvg) {
+                svgdata.push({type: svgt_line, x1: x, y1: y + .5, x2: x + band[1], y2: y + .5});
+                svgdata.push({
+                    type: svgt_line,
+                    x1: x,
+                    y1: plotheight - 0.5 + y,
+                    x2: x + band[1],
+                    y2: plotheight - 0.5 + y
+                });
+            }
+            var w = ctx.measureText(band[0]).width;
+            if (w &lt; band[1] &amp;&amp; plotheight >= mintextheight) {
+                ctx.fillStyle = 'rgb(' + cytoWordColor[band[2]] + ',' + cytoWordColor[band[2]] + ',' + cytoWordColor[band[2]] + ')';
+                var y2 = y + 10 + (plotheight - mintextheight) / 2;
+                ctx.fillText(band[0], x + (band[1] - w) / 2, y2);
+                if (tosvg) svgdata.push({
+                    type: svgt_text,
+                    x: x + (band[1] - w) / 2,
+                    y: y2,
+                    text: band[0],
+                    color: ctx.fillStyle,
+                    bold: true
+                });
+            }
+            if (previousIsCentromere == true) {
+                ctx.fillStyle = colorCentral.foreground;
+                ctx.fillRect(x, y, 1, plotheight);
+                if (tosvg) svgdata.push({type: svgt_line, x1: x, y1: y, x2: x, y2: y + plotheight});
+            }
+            previousIsCentromere = false;
+        } else {
+            ctx.fillStyle = centromereColor;
+            ctx.fillRect(x, 3 + y, band[1], plotheight - 5);
+            if (tosvg) svgdata.push({
+                type: svgt_rect,
+                x: x,
+                y: y + 3,
+                w: band[1],
+                h: plotheight - 5,
+                fill: ctx.fillStyle
+            });
+            var w = ctx.measureText('centromere').width;
+            if (w &lt; band[1]) {
+                ctx.fillStyle = 'white';
+                ctx.fillText('centromere', x + (band[1] - w) / 2, 10 + y);
+                if (tosvg) svgdata.push({
+                    type: svgt_text,
+                    x: x + (band[1] - w) / 2,
+                    y: y + 10,
+                    color: ctx.fillStyle,
+                    text: 'centromere',
+                    bold: true
+                });
+            }
+            if (previousIsCentromere == false) {
+                ctx.fillStyle = colorCentral.foreground;
+                ctx.fillRect(x - 1, y, 1, plotheight);
+                if (tosvg) svgdata.push({type: svgt_line, x1: x - 1, y1: y, x2: x - 1, y2: y + plotheight});
+            }
+            previousIsCentromere = true;
+        }
+        if (band[3]) {
+            // enclose head
+            ctx.fillStyle = colorCentral.foreground;
+            ctx.fillRect(x, y, 1, plotheight);
+            if (tosvg) svgdata.push({type: svgt_line, x1: x, y1: y, x2: x, y2: y + plotheight});
+        }
+        if (band[4]) {
+            // enclose tail
+            ctx.fillStyle = colorCentral.foreground;
+            ctx.fillRect(x + band[1], y, 1, plotheight);
+            if (tosvg) svgdata.push({type: svgt_line, x1: x + band[1], y1: y, x2: x + band[1], y2: y + plotheight});
+        }
+        x += band[1];
+    }
+    return svgdata;
+}
+
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="genome.html">genome</a></li></ul><h3>Global</h3><ul><li><a href="global.html#drawIdeogramSegment_simple">drawIdeogramSegment_simple</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Mon Jul 27 2015 17:28:19 GMT-0500 (CDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

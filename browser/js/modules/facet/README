@@ -1,0 +1,39 @@
+function kwsearch_tipover
+function tkitemkwsearch_ku
+function tkitemkwsearch
+Browser.prototype.tkitemkwsearch_cb
+function tkkwsearch_ku
+function tkkwsearch
+function facet2pubs
+function pubs2facet
+function mdterm2str
+Browser.prototype.generateTrackselectionLayout
+Browser.prototype.flattenhmtk
+Browser.prototype.generateTrackselectionGrid
+function facet_header_press
+Browser.prototype.facet_swap
+Browser.prototype.tracksetTwonumbers
+Browser.prototype.trackselectionoption_onecriteria
+function toggle32
+function facet_cellmover
+function facet_cellmout
+function facet_colh_mover
+function facet_colh_mout
+function facet_rowh_mover
+function facet_rowh_mout
+function facettermclick_grid
+function facet_dimension_show
+function facet_choosedim_closure
+Browser.prototype.facet_choosedim
+function facet_clickcell
+function dom_addtkentry
+Browser.prototype.showhmtkchoice
+function menu_delete_custtk
+Browser.prototype.delete_custtk
+function facet_tklst_toggleall
+function facet_tklst_addSelected
+function facet_tklst_removeall
+function facet_term_selectall
+function facet_term_removeall
+Browser.prototype.facetclickedcell_remake
+function facet_removeall

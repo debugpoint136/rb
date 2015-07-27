@@ -1,0 +1,8 @@
+function invisible_shield
+function cloakPage
+Browser.prototype.cloak 
+Browser.prototype.shieldOn 
+Browser.prototype.shieldOff 
+Browser.prototype.unveil 
+function loading_cloak
+function loading_done

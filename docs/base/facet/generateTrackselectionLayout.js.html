@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: generateTrackselectionLayout.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: generateTrackselectionLayout.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * ===BASE===// facet // generateTrackselectionLayout.js
+ * @param __Browser.prototype__
+ * @param 
+ */
+
+Browser.prototype.generateTrackselectionLayout = function () {
+    if (!this.facet) return;
+    if (this.facet.dim1.mdidx == null) {
+        // uninitiated
+        var count = gflag.mdlst.length;
+        if (count == 0) {
+            // no md??
+            this.facet.dim1.mdidx =
+                this.facet.dim1.term =
+                    this.facet.dim2.mdidx =
+                        this.facet.dim2.term = null;
+            return;
+        }
+        if (count == 1) {
+            this.facet.dim1.mdidx = 0;
+        } else if (count == 2) {
+            this.facet.dim1.mdidx = gflag.mdlst[0].tag == literal_imd ? 1 : 0;
+        } else {
+            for (var i = 0; i &lt; count; i++) {
+                if (gflag.mdlst[i].tag != literal_imd) {
+                    if (this.facet.dim1.mdidx == null) {
+                        this.facet.dim1.mdidx = i;
+                    } else {
+                        this.facet.dim2.mdidx = i;
+                        break;
+                    }
+                }
+            }
+        }
+        // use 1 root term
+        for (var n in gflag.mdlst[this.facet.dim1.mdidx].root) {
+            this.facet.dim1.term = n;
+            break;
+        }
+        // dim 2
+        if (this.facet.dim2.mdidx != null) {
+            for (var n in gflag.mdlst[this.facet.dim2.mdidx].root) {
+                this.facet.dim2.term = n;
+                break;
+            }
+        }
+    }
+    this.facet.dim1.dom.innerHTML = mdterm2str(this.facet.dim1.mdidx, this.facet.dim1.term);
+    this.facet.rowlst = [];
+    this.facet.collst = [];
+    if (this.facet.dim2.mdidx == null) {
+        // only one criterion applies, make a text tree
+        this.facet.swapbutt.style.display = 'none';
+        this.facet.dim2.dom.innerHTML = literal_facet_nouse;
+        this.facet.div2.style.display = 'none';
+        this.facet.div1.style.display = 'block';
+        stripChild(this.facet.div1, 0);
+        var ul = dom_create('ul', this.facet.div1);
+        var idx = this.facet.dim1.mdidx;
+        for (var cterm in gflag.mdlst[idx].p2c[this.facet.dim1.term]) {
+            this.trackselectionoption_onecriteria(cterm, idx, ul);
+        }
+        return;
+    }
+// two criteria
+    this.facet.swapbutt.style.display = 'inline';
+    this.facet.dim2.dom.innerHTML = mdterm2str(this.facet.dim2.mdidx, this.facet.dim2.term);
+    this.facet.div2.style.display = "block";
+    this.facet.div1.style.display = "none";
+    for (var cterm in gflag.mdlst[this.facet.dim1.mdidx].p2c[this.facet.dim1.term]) {
+        this.facet.rowlst.push([cterm, this.facet.dim1.mdidx, '&amp;#8862;']);
+    }
+    for (var cterm in gflag.mdlst[this.facet.dim2.mdidx].p2c[this.facet.dim2.term]) {
+        this.facet.collst.push([cterm, 0, '&amp;#8862;']);
+    }
+    this.generateTrackselectionGrid();
+};
+
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#dom_addtkentry">dom_addtkentry</a></li><li><a href="global.html#facet2pubs">facet2pubs</a></li><li><a href="global.html#facet_cellmout">facet_cellmout</a></li><li><a href="global.html#facet_cellmover">facet_cellmover</a></li><li><a href="global.html#facet_choosedim_closure">facet_choosedim_closure</a></li><li><a href="global.html#facet_clickcell">facet_clickcell</a></li><li><a href="global.html#facet_colh_mout">facet_colh_mout</a></li><li><a href="global.html#facet_colh_mover">facet_colh_mover</a></li><li><a href="global.html#facet_dimension_show">facet_dimension_show</a></li><li><a href="global.html#facet_header_press">facet_header_press</a></li><li><a href="global.html#facet_removeall">facet_removeall</a></li><li><a href="global.html#facet_rowh_mout">facet_rowh_mout</a></li><li><a href="global.html#facet_rowh_mover">facet_rowh_mover</a></li><li><a href="global.html#facet_term_removeall">facet_term_removeall</a></li><li><a href="global.html#facet_term_selectall">facet_term_selectall</a></li><li><a href="global.html#facet_tklst_addSelected">facet_tklst_addSelected</a></li><li><a href="global.html#facet_tklst_removeall">facet_tklst_removeall</a></li><li><a href="global.html#facet_tklst_toggleall">facet_tklst_toggleall</a></li><li><a href="global.html#facettermclick_grid">facettermclick_grid</a></li><li><a href="global.html#kwsearch_tipover">kwsearch_tipover</a></li><li><a href="global.html#mdterm2str">mdterm2str</a></li><li><a href="global.html#menu_delete_custtk">menu_delete_custtk</a></li><li><a href="global.html#pubs2facet">pubs2facet</a></li><li><a href="global.html#tkitemkwsearch">tkitemkwsearch</a></li><li><a href="global.html#tkitemkwsearch_ku">tkitemkwsearch_ku</a></li><li><a href="global.html#tkkwsearch">tkkwsearch</a></li><li><a href="global.html#tkkwsearch_ku">tkkwsearch_ku</a></li><li><a href="global.html#toggle32">toggle32</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Mon Jul 27 2015 17:27:50 GMT-0500 (CDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
