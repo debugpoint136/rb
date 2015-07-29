@@ -390,7 +390,8 @@ Browser.prototype.loaddatahub_json = function (json, sourcehub) {
                 ibp.geneset_ripe = obj.list;
             }
         } else if (tag == 'native_metadata_terms') {
-            alertbox_addmsg({text: 'Use of obsolete attribute "native_metadata_terms" in datahub (see ' + FT2noteurl.md + ')'});
+           // FIXME /* dpuru : 07/29/2015 : inactivating the below line as soft fix to address Issue#15 */
+          //  alertbox_addmsg({text: 'Use of obsolete attribute "native_metadata_terms" in datahub (see ' + FT2noteurl.md + ')'});
         } else if (tag == 'native_track') {
             // validate native tracks here and put to .tklst
             if (!obj.list) {
@@ -507,6 +508,33 @@ Browser.prototype.loaddatahub_json = function (json, sourcehub) {
         // to prevent default processing of tracks
         this.__golden_loadhubcb();
     } else {
-        this.ajax_loadbbjdata(ibp);
+        // this.ajax_loadbbjdata(ibp); // dpuru : 07/29/2017 : Inactivate this line - N/A for Repeat Browser
+
+        // * -- dpuru : 07/29/2017 : CLEANME
+        // * Call this section once genome.hmtk is ready
+        // * -- start of code insert
+
+        var newhash={};
+        for(var n in this.genome.hmtk) {
+            var t=this.genome.hmtk[n];
+            if(!t.geolst) continue;
+            for(var i=0; i<t.geolst.length; i++) {
+                var gsm=t.geolst[i];
+                if(!(gsm in geo2id)) continue;
+                var gid=geo2id[gsm];
+                t.label=id2geo[gid].label;
+                newhash[gsm]=t;
+                geoid2realtrack[gid]=n;
+                realtrack2geoid[n]=gid;
+            }
+        }
+        this.genome.hmtk=newhash;
+        this.move.styleLeft=0;
+        this.hmdiv.style.left=0;
+        pagemask();
+        if (Object.keys(newhash).length){
+            this.ajax_addtracks_names(geopreload.split(','));
+        }
+        // -- end of code insert -- *
     }
 };

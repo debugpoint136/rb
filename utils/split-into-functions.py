@@ -52,7 +52,7 @@ with open(FILE, 'r') as ff :
 			writeHeader = 1
 			outfile.close()
 
-			filename = OUTDIR + "/" + fname.rstrip('\n') + ".js"
+			filename = OUTDIR + "/" + fname.strip(' \t\n\r') + ".js"
 			if (len(readmelst)) :
 				nextfile = readmelst.pop(0)
 

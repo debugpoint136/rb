@@ -1,0 +1,4 @@
+Browser.prototype.ajaxSaveUrlpiece
+Browser.prototype.ajax
+function ajaxPost
+Browser.prototype.ajaxText
