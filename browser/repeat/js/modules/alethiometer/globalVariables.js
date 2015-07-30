@@ -57,7 +57,7 @@ var qtc_input_u={pr:77,pg:129,pb:73,thtype:0,height:50,uselog:false};
 var qtc_density={pr:194,pg:105,pb:114,thtype:0,height:50,uselog:false};
 
 //var mdlst_row=['Sample','Epigenetic Mark','Transcription Regulator']; // dpuru : 06/30/2015
-var mdlst_row=['bigwig','hg19'];
+var mdlst_row=[''];
 var temcm_attrlst=['total bp #',
     'SINE','LINE','LTR','DNA',
     'Simple_repeat','Low_complexity','Satellite',

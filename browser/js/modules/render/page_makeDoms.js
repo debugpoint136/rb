@@ -688,7 +688,8 @@ function page_makeDoms(param) {
     d4.className = 'bigsubmit';
     d.submit = d4;
     d4.count = 0;
-    d4.addEventListener('click', facet_tklst_addSelected, false);
+    // d4.addEventListener('click',facet_tklst_addSelected,false); // dpuru : 07/08/2015 - changing this to repeat specific
+    d4.addEventListener('click',facet_tklst_addSelected_repeat,false); // dpuru : added this
     d4.style.width = 120;
     dom_addbutt(d2, 'Select all', facet_tklst_toggleall).tofill = true;
     dom_addbutt(d2, 'Deselect all', facet_tklst_toggleall).tofill = false;
