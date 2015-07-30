@@ -5,7 +5,7 @@
 A { color:#2176C7; }
 A.a2 {color:#3D8BFF;}
 A.a2:hover {color:#f33;}
-A.w {color:white;}
+A.w {color:black;}
 
 ul {list-style-type: none;}
 ul.d {list-style-type: disc;}
@@ -502,7 +502,7 @@ cursor: pointer; background-color:transparent;color:#858585;white-space:nowrap;}
 .clb_o:hover {background-color:#FFE957;}
 
 .clb4 {cursor:default;}
-.clb4:hover {background-color:rgba(255,255,255,.7);}
+.clb4:hover {background-color:rgba(141, 144, 146,.7);}
 
 canvas.tkattrnamevcanvas {cursor:pointer; border:solid 1px transparent;}
 canvas.tkattrnamevcanvas:hover {border-color: #009e00;}

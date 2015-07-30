@@ -234,7 +234,7 @@
 "browser/js/modules/preqtc/cpmoveMU.js",
 "browser/js/modules/preqtc/placeIndicator3.js",
 "browser/js/modules/preqtc/tkinfo_show_closure.js",
-"browser/js/modules/preqtc/Browser.prototype.tkinfo_show.js",
+"browser/js/modules/preqtc/tkinfo_show.js",
 "browser/js/modules/preqtc/generic_tkdetail.js",
 "browser/js/modules/preqtc/hengeview_lrtkdetail.js",
 "browser/js/modules/preqtc/menuGetonetrackdetails.js",

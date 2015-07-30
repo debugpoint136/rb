@@ -140,7 +140,7 @@ function drawBigmap(recordtkminmax)
         tk.header.height=cellheight;
         tk.header.alethiometer=true;
         var ctx=tk.header.getContext('2d');
-        ctx.fillStyle='white';
+        ctx.fillStyle='black';
         ctx.fillText(tk.label,5,cellheight);
         browser.hmheaderdiv.appendChild(tk.header);
 
@@ -177,11 +177,11 @@ function drawBigmap(recordtkminmax)
             }
         }
         // draw a separating line
-        ctx.fillStyle='#22223A';
+        ctx.fillStyle='#a9a9a9';
         ctx.fillRect(0,cellwidth,1,c.height);
         // if enough width, draw name
         if(cellwidth>=10) {
-            ctx.fillStyle='white';
+            ctx.fillStyle='black';
             ctx.font='10px Sans-serif';
             ctx.rotate(Math.PI*1.5);
             ctx.fillText(id2subfam[col_runtime[i]].name, -c.height+2, 10);
@@ -3291,14 +3291,14 @@ function alethiometer_addtk_cb(data,geoacclst)
 
 function readygo()
 {
-    colorCentral.foreground='#EAE3CB';
-    colorCentral.background='#3f7271';
+    colorCentral.foreground='#333333';
+    colorCentral.background='#FFFFFF';
     colorCentral.fg_r=188;
     colorCentral.fg_g=201;
     colorCentral.fg_b=188;
     colorCentral.hl='#1814FD';
-    colorCentral.pagebg='rgb(63,102,130)';
-    regionSpacing.color='#FCF4DC';
+    colorCentral.pagebg='rgb(255, 255, 255)';
+    regionSpacing.color='#333333';
 
     document.body.addEventListener('keyup',page_keyup,false);
     document.getElementById('headerdiv').style.backgroundColor=colorCentral.pagebg;
@@ -3374,10 +3374,10 @@ function readygo()
      2. a subfam and a geo data set
      */
 
-    pagecloak.style.backgroundColor='rgb(0,30,0)';
-    pagecloak.style.opacity=0.85;
+    pagecloak.style.backgroundColor='rgb(29, 96, 154)';
+    pagecloak.style.opacity=1;
 
-    menu.style.backgroundColor='rgba(100, 44, 10, 0.6)';
+    menu.style.backgroundColor='rgba(132, 113, 98, 0.6)';
     menu.style.webkitBoxShadow=menu.style.boxShadow='';
     menu.style.borderLeftColor=menu.style.borderRightColor='rgba(133,133,133,0.9)';
 
@@ -3474,7 +3474,7 @@ onblur="if(this.value.length==0) this.value=\'enter transposon name\';"> \
         holder.appendChild(c);
         var ctx=c.getContext('2d');
         ctx.font='10px Sans-serif';
-        ctx.fillStyle='white';
+        ctx.fillStyle='black';
         ctx.fillText(temcm_attrlst[i], rowlabelwidth-ctx.measureText(temcm_attrlst[i]).width, 8);
     }
 
