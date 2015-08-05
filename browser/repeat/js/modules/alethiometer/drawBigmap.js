@@ -24,7 +24,7 @@ function drawBigmap(recordtkminmax)
         tk.header.height=cellheight;
         tk.header.alethiometer=true;
         var ctx=tk.header.getContext('2d');
-        ctx.fillStyle='white';
+        ctx.fillStyle='black'; // dpuru : changed from white
         ctx.fillText(tk.label,5,cellheight);
         browser.hmheaderdiv.appendChild(tk.header);
 
@@ -65,7 +65,7 @@ function drawBigmap(recordtkminmax)
         ctx.fillRect(0,cellwidth,1,c.height);
         // if enough width, draw name
         if(cellwidth>=10) {
-            ctx.fillStyle='white';
+            ctx.fillStyle='black'; // dpuru : changed from white
             ctx.font='10px Sans-serif';
             ctx.rotate(Math.PI*1.5);
             ctx.fillText(id2subfam[col_runtime[i]].name, -c.height+2, 10);

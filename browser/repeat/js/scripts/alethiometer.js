@@ -35,12 +35,11 @@ var url_subfambed=url_base+'repeat/_d/subfam_bed/';
 var geneTrackColor='#00A4DB';
 var defaultRepeatEnsembleTrack='rmsk_ensemble';
 //var geopreload='GSM733769,GSM733708,GSM945188,GSM733772,GSM733664,GSM733677,GSM733758,GSM945196,GSM733771,GSM733679,GSM945212,GSM733736,GSM733642,GSM733767,GSM736620,GSM816665,GSM733752,GSM749706,GSM822312,GSM935611,GSM803355,GSM822270,GSM935386,GSM803485,GSM935612,GSM935608,GSM733734,GSM733682,GSM945201,GSM798322,GSM1003480,GSM733756,GSM733696,GSM945208,GSM733684,GSM733711,GSM945230,GSM733669,GSM733689,GSM1003483,GSM1003520,GSM736564,GSM816633,GSM816643,GSM733785,GSM749739,GSM822285,GSM733759,GSM803533,GSM822273,GSM935395,GSM935360,GSM935383';
-//var geopreload='GSM935580,GSM935360,GSM733769,GSM733708';
 var geopreload='GSM935580';
 
 var apply_weight=false;
 
-var pr=255,pg=0,pb=0,
+var pr=255,pg=0,pb=0,// dpuru : switching yellow to red
     nr=0,ng=0,nb=255;
 
 // to configure the behavior, adjustable
@@ -141,7 +140,7 @@ function drawBigmap(recordtkminmax)
         tk.header.height=cellheight;
         tk.header.alethiometer=true;
         var ctx=tk.header.getContext('2d');
-        ctx.fillStyle='black';
+        ctx.fillStyle='black'; // dpuru : changed from white
         ctx.fillText(tk.label,5,cellheight);
         browser.hmheaderdiv.appendChild(tk.header);
 
@@ -178,11 +177,11 @@ function drawBigmap(recordtkminmax)
             }
         }
         // draw a separating line
-        ctx.fillStyle='#a9a9a9';
+        ctx.fillStyle='#22223A';
         ctx.fillRect(0,cellwidth,1,c.height);
         // if enough width, draw name
         if(cellwidth>=10) {
-            ctx.fillStyle='black';
+            ctx.fillStyle='black'; // dpuru : changed from white
             ctx.font='10px Sans-serif';
             ctx.rotate(Math.PI*1.5);
             ctx.fillText(id2subfam[col_runtime[i]].name, -c.height+2, 10);
@@ -391,7 +390,7 @@ function __track_Mmove(event)
 //pica_go((event.clientX>document.body.clientWidth-300)?event.clientX-300:event.clientX, (event.clientY>document.body.clientHeight-200)?event.clientY-200:event.clientY);
     pica_go(event.clientX,event.clientY);
     var v=tkobj.data[col_runtime[x]][useRatioIdx];
-    picasays.innerHTML='<table style="margin:5px;white-space:nowrap;"><tr><td colspan=2 style="font-size:16px;color:#27292b;">'+
+    picasays.innerHTML='<table style="margin:5px;white-space:nowrap;"><tr><td colspan=2 style="font-size:16px;color:#27292b;">'+ // dpuru : changed color from 'white'
         htmltext_bigmapcell(v,tkobj.maxv,tkobj.minv)+
         '</td></tr>'+
         '<tr><td class=tph>experiment</td>'+
@@ -732,7 +731,7 @@ function htmltext_subfaminfo(sfid, lightfg) {
 // light foreground?
     var ii=id2subfam[sfid];
     return '<table>'+
-        '<tr><td class=tph>subfamily</td><td><span style="font-weight:bold;'+(lightfg?'color:#27292b;':'')+'">'+
+        '<tr><td class=tph>subfamily</td><td><span style="font-weight:bold;'+(lightfg?'color:#27292b;':'')+'">'+ // dpuru : changed color from white
         ii.name+'</span></td></tr>'+
         '<tr><td class=tph>family</td><td>'+ii.fam+'</td></tr>'+
         '<tr><td class=tph>class</td><td>'+ii.cls+'</td></tr>'+
@@ -1282,7 +1281,6 @@ function init_newgg(vobj)
     vobj.handle=h;
 
     vobj.main=dom_create('div',apps.gg.holder);
-
 // header
     var d=make_headertable(vobj.main,0);
 
@@ -1291,6 +1289,7 @@ function init_newgg(vobj)
     d.style.borderRadius='10px 10px 10px 10px';
     d.style.boxShadow='10px 10px 19px -5px rgba(168,159,168,1)';
     /*end edit*/
+
     d._h.style.borderBottom='solid 2px '+colorCentral.longlst[cidx];
     d._h.align='left';
     vobj.content=d._c;
@@ -3299,14 +3298,14 @@ function alethiometer_addtk_cb(data,geoacclst)
 
 function readygo()
 {
-    colorCentral.foreground='#333333';
-    colorCentral.background='#FFFFFF';
+    colorCentral.foreground='#333333'; // dpuru : changed from #EAE3CB
+    colorCentral.background='#FFFFFF'; // dpuru : changed from #3f7271
     colorCentral.fg_r=188;
     colorCentral.fg_g=201;
     colorCentral.fg_b=188;
     colorCentral.hl='#1814FD';
-    colorCentral.pagebg='rgb(255, 255, 255)';
-    regionSpacing.color='#333333';
+    colorCentral.pagebg='rgb(255, 255, 255)'; // dpuru : changed from rgb(63,102,130)
+    regionSpacing.color='#333333'; // dpuru : changed from #FCF4DC
 
     document.body.addEventListener('keyup',page_keyup,false);
     document.getElementById('headerdiv').style.backgroundColor=colorCentral.pagebg;
@@ -3382,10 +3381,11 @@ function readygo()
      2. a subfam and a geo data set
      */
 
-    pagecloak.style.backgroundColor='rgb(29, 96, 154)';
-    pagecloak.style.opacity=1;
+    pagecloak.style.backgroundColor='rgb(29, 96, 154)'; //dpuru : changed from rgb(0,30,0)
+    pagecloak.style.opacity=0.85;
 
-    menu.style.backgroundColor='rgba(245, 245, 245, 1)';
+    menu.style.backgroundColor='rgba(245, 245, 245, 1)'; //dpuru : changed from rgba(100, 44, 10, 0.6)
+    // dpuru : Added below
     menu.style.webkitBorderRadius='10px 10px 10px 10px';
     menu.border='2px solid #3b49a8';
     menu.style.webkitBoxShadow=menu.style.boxShadow='10px 10px 19px -5px rgba(168,159,168,1)';
@@ -3484,7 +3484,7 @@ onblur="if(this.value.length==0) this.value=\'enter transposon name\';"> \
         holder.appendChild(c);
         var ctx=c.getContext('2d');
         ctx.font='10px Sans-serif';
-        ctx.fillStyle='black';
+        ctx.fillStyle='black'; //dpuru : changed it from 'white'
         ctx.fillText(temcm_attrlst[i], rowlabelwidth-ctx.measureText(temcm_attrlst[i]).width, 8);
     }
 

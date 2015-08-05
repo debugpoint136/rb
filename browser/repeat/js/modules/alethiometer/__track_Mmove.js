@@ -20,7 +20,7 @@ function __track_Mmove(event)
 //pica_go((event.clientX>document.body.clientWidth-300)?event.clientX-300:event.clientX, (event.clientY>document.body.clientHeight-200)?event.clientY-200:event.clientY);
     pica_go(event.clientX,event.clientY);
     var v=tkobj.data[col_runtime[x]][useRatioIdx];
-    picasays.innerHTML='<table style="margin:5px;white-space:nowrap;"><tr><td colspan=2 style="font-size:16px;color:white;">'+
+    picasays.innerHTML='<table style="margin:5px;white-space:nowrap;"><tr><td colspan=2 style="font-size:16px;color:#27292b;">'+ // dpuru : changed color from 'white'
         htmltext_bigmapcell(v,tkobj.maxv,tkobj.minv)+
         '</td></tr>'+
         '<tr><td class=tph>experiment</td>'+

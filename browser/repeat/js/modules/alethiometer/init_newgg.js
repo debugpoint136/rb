@@ -33,6 +33,13 @@ function init_newgg(vobj)
     vobj.main=dom_create('div',apps.gg.holder);
 // header
     var d=make_headertable(vobj.main,0);
+
+    /*dpuru : editing UI features : 4Aug2015*/
+    d.style.backgroundColor='rgb(255,255,255)';
+    d.style.borderRadius='10px 10px 10px 10px';
+    d.style.boxShadow='10px 10px 19px -5px rgba(168,159,168,1)';
+    /*end edit*/
+
     d._h.style.borderBottom='solid 2px '+colorCentral.longlst[cidx];
     d._h.align='left';
     vobj.content=d._c;

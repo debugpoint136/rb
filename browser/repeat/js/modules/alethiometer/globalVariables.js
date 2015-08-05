@@ -35,11 +35,11 @@ var url_subfambed=url_base+'repeat/_d/subfam_bed/';
 var geneTrackColor='#00A4DB';
 var defaultRepeatEnsembleTrack='rmsk_ensemble';
 //var geopreload='GSM733769,GSM733708,GSM945188,GSM733772,GSM733664,GSM733677,GSM733758,GSM945196,GSM733771,GSM733679,GSM945212,GSM733736,GSM733642,GSM733767,GSM736620,GSM816665,GSM733752,GSM749706,GSM822312,GSM935611,GSM803355,GSM822270,GSM935386,GSM803485,GSM935612,GSM935608,GSM733734,GSM733682,GSM945201,GSM798322,GSM1003480,GSM733756,GSM733696,GSM945208,GSM733684,GSM733711,GSM945230,GSM733669,GSM733689,GSM1003483,GSM1003520,GSM736564,GSM816633,GSM816643,GSM733785,GSM749739,GSM822285,GSM733759,GSM803533,GSM822273,GSM935395,GSM935360,GSM935383';
-var geopreload='GSM935580,GSM935360,GSM733769,GSM733708';
+var geopreload='GSM935580';
 
 var apply_weight=false;
 
-var pr=255,pg=255,pb=0,
+var pr=255,pg=0,pb=0,// dpuru : switching yellow to red
     nr=0,ng=0,nb=255;
 
 // to configure the behavior, adjustable
@@ -57,7 +57,7 @@ var qtc_input_u={pr:77,pg:129,pb:73,thtype:0,height:50,uselog:false};
 var qtc_density={pr:194,pg:105,pb:114,thtype:0,height:50,uselog:false};
 
 //var mdlst_row=['Sample','Epigenetic Mark','Transcription Regulator']; // dpuru : 06/30/2015
-var mdlst_row=[''];
+var mdlst_row=[];
 var temcm_attrlst=['total bp #',
     'SINE','LINE','LTR','DNA',
     'Simple_repeat','Low_complexity','Satellite',

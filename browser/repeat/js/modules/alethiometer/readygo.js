@@ -4,14 +4,14 @@
 
 function readygo()
 {
-    colorCentral.foreground='#EAE3CB';
-    colorCentral.background='#3f7271';
+    colorCentral.foreground='#333333'; // dpuru : changed from #EAE3CB
+    colorCentral.background='#FFFFFF'; // dpuru : changed from #3f7271
     colorCentral.fg_r=188;
     colorCentral.fg_g=201;
     colorCentral.fg_b=188;
     colorCentral.hl='#1814FD';
-    colorCentral.pagebg='rgb(63,102,130)';
-    regionSpacing.color='#FCF4DC';
+    colorCentral.pagebg='rgb(255, 255, 255)'; // dpuru : changed from rgb(63,102,130)
+    regionSpacing.color='#333333'; // dpuru : changed from #FCF4DC
 
     document.body.addEventListener('keyup',page_keyup,false);
     document.getElementById('headerdiv').style.backgroundColor=colorCentral.pagebg;
@@ -87,11 +87,14 @@ function readygo()
      2. a subfam and a geo data set
      */
 
-    pagecloak.style.backgroundColor='rgb(0,30,0)';
+    pagecloak.style.backgroundColor='rgb(29, 96, 154)'; //dpuru : changed from rgb(0,30,0)
     pagecloak.style.opacity=0.85;
 
-    menu.style.backgroundColor='rgba(100, 44, 10, 0.6)';
-    menu.style.webkitBoxShadow=menu.style.boxShadow='';
+    menu.style.backgroundColor='rgba(245, 245, 245, 1)'; //dpuru : changed from rgba(100, 44, 10, 0.6)
+    // dpuru : Added below
+    menu.style.webkitBorderRadius='10px 10px 10px 10px';
+    menu.border='2px solid #3b49a8';
+    menu.style.webkitBoxShadow=menu.style.boxShadow='10px 10px 19px -5px rgba(168,159,168,1)';
     menu.style.borderLeftColor=menu.style.borderRightColor='rgba(133,133,133,0.9)';
 
     menu.removeChild(menu.c23);
@@ -187,7 +190,7 @@ onblur="if(this.value.length==0) this.value=\'enter transposon name\';"> \
         holder.appendChild(c);
         var ctx=c.getContext('2d');
         ctx.font='10px Sans-serif';
-        ctx.fillStyle='white';
+        ctx.fillStyle='black'; //dpuru : changed it from 'white'
         ctx.fillText(temcm_attrlst[i], rowlabelwidth-ctx.measureText(temcm_attrlst[i]).width, 8);
     }
 
