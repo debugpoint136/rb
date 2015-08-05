@@ -1245,7 +1245,7 @@ Chromosome bar size <button type=button change=1 onclick=hengeview_changechrbars
 // pica is on top of menu
     pica = dom_create('div', document.body, 'position:fixed;border:1px solid white;z-index:103;');
     var d = dom_create('div', pica, 'position:relative;');
-    dom_create('div', d, 'position:absolute;left:0px;top:0px;background-color:rgba(0,53,82,.8);width:100%;height:100%;');
+    dom_create('div', d, 'position:absolute;left:0px;top:0px;background-color:rgba(236, 236, 231,0.8);width:100%;height:100%;'); //dpuru : changed color - rgba(0,53,82,.8)
     picasays = dom_create('div', d, 'position:relative;color:#e0e0e0;padding:3px;');
 
 

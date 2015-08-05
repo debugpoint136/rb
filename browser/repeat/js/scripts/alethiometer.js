@@ -391,7 +391,7 @@ function __track_Mmove(event)
 //pica_go((event.clientX>document.body.clientWidth-300)?event.clientX-300:event.clientX, (event.clientY>document.body.clientHeight-200)?event.clientY-200:event.clientY);
     pica_go(event.clientX,event.clientY);
     var v=tkobj.data[col_runtime[x]][useRatioIdx];
-    picasays.innerHTML='<table style="margin:5px;white-space:nowrap;"><tr><td colspan=2 style="font-size:16px;color:white;">'+
+    picasays.innerHTML='<table style="margin:5px;white-space:nowrap;"><tr><td colspan=2 style="font-size:16px;color:#27292b;">'+
         htmltext_bigmapcell(v,tkobj.maxv,tkobj.minv)+
         '</td></tr>'+
         '<tr><td class=tph>experiment</td>'+
@@ -732,7 +732,7 @@ function htmltext_subfaminfo(sfid, lightfg) {
 // light foreground?
     var ii=id2subfam[sfid];
     return '<table>'+
-        '<tr><td class=tph>subfamily</td><td><span style="font-weight:bold;'+(lightfg?'color:white;':'')+'">'+
+        '<tr><td class=tph>subfamily</td><td><span style="font-weight:bold;'+(lightfg?'color:#27292b;':'')+'">'+
         ii.name+'</span></td></tr>'+
         '<tr><td class=tph>family</td><td>'+ii.fam+'</td></tr>'+
         '<tr><td class=tph>class</td><td>'+ii.cls+'</td></tr>'+
@@ -1282,8 +1282,15 @@ function init_newgg(vobj)
     vobj.handle=h;
 
     vobj.main=dom_create('div',apps.gg.holder);
+
 // header
     var d=make_headertable(vobj.main,0);
+
+    /*dpuru : editing UI features : 4Aug2015*/
+    d.style.backgroundColor='rgb(255,255,255)';
+    d.style.borderRadius='10px 10px 10px 10px';
+    d.style.boxShadow='10px 10px 19px -5px rgba(168,159,168,1)';
+    /*end edit*/
     d._h.style.borderBottom='solid 2px '+colorCentral.longlst[cidx];
     d._h.align='left';
     vobj.content=d._c;
