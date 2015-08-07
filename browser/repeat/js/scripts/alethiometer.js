@@ -44,8 +44,8 @@ var pr=255,pg=0,pb=0,// dpuru : switching yellow to red
 
 // to configure the behavior, adjustable
 var rowlabelwidth=150; // width
-var cellwidth=2;
-var cellwidth_zoomout=2;
+var cellwidth=10;
+var cellwidth_zoomout=10;
 var cellheight=10;
 
 
@@ -1542,7 +1542,7 @@ function menu_genomegraph_2()
         }
         var s=document.createElement('span');
         s.innerHTML='&#10092;ALL&#10093;';
-        s.className='clb4';
+        s.className='clb7';
         s.style.display='none';
         s.style.marginLeft=50;
         s.key=key;

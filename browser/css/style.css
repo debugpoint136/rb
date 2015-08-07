@@ -502,7 +502,22 @@ cursor: pointer; background-color:transparent;color:#858585;white-space:nowrap;}
 .clb_o:hover {background-color:#FFE957;}
 
 .clb4 {cursor:default;}
-.clb4:hover {background-color:rgba(141, 144, 146,.7);}
+.clb4:hover {
+    /*background-color:rgba(141, 144, 146,.7);*/
+    border-radius: 5px;
+    background: #fcbc3c;
+
+    padding: 10px 10px 10px 10px;
+}
+
+.clb7:hover {
+    /*background-color:rgba(141, 144, 146,.7);*/
+    border-radius: 5px;
+    background: #fcbc3c;
+    color:white;
+    font-weight: bold;
+    padding: 0px 10px 0px 10px;
+}
 
 canvas.tkattrnamevcanvas {cursor:pointer; border:solid 1px transparent;}
 canvas.tkattrnamevcanvas:hover {border-color: #009e00;}
